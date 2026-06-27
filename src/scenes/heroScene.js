@@ -61,7 +61,7 @@ export function initHeroScene(canvas) {
     opacity: 0.7,
   });
   const platform = new THREE.Mesh(platformGeo, platformMat);
-  platform.position.y = -1.025;
+  platform.position.y = -0.8;
   platform.receiveShadow = true;
   scene.add(platform);
 
@@ -70,7 +70,7 @@ export function initHeroScene(canvas) {
   const ringMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.rotation.x = Math.PI / 2;
-  ring.position.y = -1.025;
+  ring.position.y = -0.8;
   scene.add(ring);
 
   // Spinner de carga
@@ -106,7 +106,7 @@ export function initHeroScene(canvas) {
       // Centrar completamente en el origen (X, Y, Z)
       model.position.set(
         -center.x * scale,
-        -center.y * scale,
+        -center.y * scale, // Ajuste vertical para que el modelo quede sobre la plataforma
         -center.z * scale
       );
 
@@ -148,6 +148,13 @@ export function initHeroScene(canvas) {
 
       // Centrar cámara al centro real del modelo ya escalado
       const finalBox = new THREE.Box3().setFromObject(model);
+
+      // Altura superior de la plataforma
+      const platformTop = -0.8 + 0.025; // posición + mitad del grosor (0.05 / 2)
+
+      // Mover el modelo para que su parte inferior toque la plataforma
+      model.position.y += platformTop - finalBox.min.y;
+
       const finalCenter = finalBox.getCenter(new THREE.Vector3());
       const finalSize = finalBox.getSize(new THREE.Vector3());
       controls.target.copy(finalCenter);
