@@ -25,12 +25,10 @@ export function buildSpine() {
         `).join('')}
       </nav>
       <div class="spine-footer">
-        <div class="name">Alejandro Mora</div>
+        <div class="name">Cristian A. Arenas.</div>
         <div class="role">3D / VR Developer</div>
         <div class="socials">
-          <a class="social-link" href="#">GitHub</a>
-          <a class="social-link" href="#">LinkedIn</a>
-          <a class="social-link" href="#">Behance</a>
+          <a class="social-link" href="https://www.linkedin.com/in/candresav123/">LinkedIn</a>
         </div>
       </div>
     </aside>
@@ -44,19 +42,13 @@ export function buildHomePage() {
       <div class="page-header-line"></div>
       <div class="home-hero">
         <div>
-          <div class="section-eyebrow">Portfolio interactivo</div>
-          <h1 class="section-title">Arte en <span>tres</span><br>dimensiones</h1>
-          <p class="section-body">Construyo experiencias inmersivas donde la geometría cobra vida. Cada proyecto es un mundo por explorar, tejido con WebGL, shaders y realidad virtual.</p>
+          <div class="section-eyebrow">Portafolio</div>
+          <h1 class="section-title">Mi portafolio de <span>proyectos</span></h1>
+          <p class="section-body">Soy un desarrollador de videojuegos y artista 3D apasionado por crear experiencias digitales. Desde modelos para impresión 3D y videojuegos en realidad virtual hasta aplicaciones web y móviles, este portafolio reúne algunos de los proyectos que han definido mi trayectoria profesional y académica.</p>
         </div>
         <div class="home-canvas-wrap">
           <canvas id="hero-canvas"></canvas>
-          <span class="hero-canvas-label">// TORUS_KNOT_V2.3 — INTERACTIVO</span>
-        </div>
-        <div class="stats-row">
-          <div class="stat"><span class="stat-num">24+</span><span class="stat-label">Proyectos</span></div>
-          <div class="stat"><span class="stat-num">6</span><span class="stat-label">Años exp.</span></div>
-          <div class="stat"><span class="stat-num">12</span><span class="stat-label">Clientes</span></div>
-          <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Polígonos</span></div>
+          <span class="hero-canvas-label">Modelo 3D de Jerry, el perro mascota.</span>
         </div>
       </div>
     </section>

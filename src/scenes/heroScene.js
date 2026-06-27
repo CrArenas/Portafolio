@@ -1,105 +1,183 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function initHeroScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-  camera.position.set(0, 0, 8);
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.set(0, 1, 5);
 
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0x4A90D9, 0.3);
+  // Controls — orbit con el mouse
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.enableZoom = true;
+  controls.minDistance = 2;
+  controls.maxDistance = 10;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.2;
+  controls.target.set(0, 0.5, 0);
+
+  // Luces
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(ambientLight);
 
-  const goldLight = new THREE.PointLight(0xC9A96E, 2, 20);
-  goldLight.position.set(5, 5, 5);
-  scene.add(goldLight);
+  const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.5);
+  keyLight.position.set(4, 6, 4);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(1024, 1024);
+  keyLight.shadow.camera.near = 0.5;
+  keyLight.shadow.camera.far = 30;
+  keyLight.shadow.camera.left = -5;
+  keyLight.shadow.camera.right = 5;
+  keyLight.shadow.camera.top = 5;
+  keyLight.shadow.camera.bottom = -5;
+  scene.add(keyLight);
 
-  const blueLight = new THREE.PointLight(0x4A90D9, 1.5, 20);
-  blueLight.position.set(-5, -3, 4);
-  scene.add(blueLight);
+  const fillLight = new THREE.DirectionalLight(0x4A90D9, 0.8);
+  fillLight.position.set(-4, 2, -2);
+  scene.add(fillLight);
 
-  // Central torus knot
-  const knotGeo = new THREE.TorusKnotGeometry(1.5, 0.4, 120, 16, 2, 3);
-  const knotMat = new THREE.MeshStandardMaterial({
+  const rimLight = new THREE.PointLight(0xC9A96E, 1.2, 15);
+  rimLight.position.set(0, 4, -3);
+  scene.add(rimLight);
+
+  // Plataforma sutil bajo el modelo
+  const platformGeo = new THREE.CylinderGeometry(1.4, 1.4, 0.05, 64);
+  const platformMat = new THREE.MeshStandardMaterial({
     color: 0x1a1a2e,
-    metalness: 0.9,
-    roughness: 0.1,
-    envMapIntensity: 1,
+    metalness: 0.6,
+    roughness: 0.3,
+    transparent: true,
+    opacity: 0.7,
   });
-  const knot = new THREE.Mesh(knotGeo, knotMat);
-  scene.add(knot);
+  const platform = new THREE.Mesh(platformGeo, platformMat);
+  platform.position.y = -1.025;
+  platform.receiveShadow = true;
+  scene.add(platform);
 
-  // Wireframe overlay
-  const wireGeo = new THREE.TorusKnotGeometry(1.52, 0.41, 60, 8, 2, 3);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, wireframe: true, transparent: true, opacity: 0.15 });
-  const wire = new THREE.Mesh(wireGeo, wireMat);
-  scene.add(wire);
+  // Anillo dorado bajo la plataforma
+  const ringGeo = new THREE.TorusGeometry(1.5, 0.02, 8, 80);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = -1.025;
+  scene.add(ring);
 
-  // Orbiting rings
-  const rings = [];
-  const ringData = [
-    { r: 2.8, tube: 0.02, color: 0xC9A96E, tiltX: 0.4, tiltZ: 0 },
-    { r: 3.2, tube: 0.015, color: 0x4A90D9, tiltX: Math.PI / 2, tiltZ: 0.6 },
-    { r: 3.6, tube: 0.01, color: 0x9B59B6, tiltX: 1.1, tiltZ: 1.1 },
-  ];
+  // Spinner de carga
+  const loadingEl = document.createElement('div');
+  loadingEl.style.cssText = `
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:12px; pointer-events:none;
+  `;
+  loadingEl.innerHTML = `
+    <div style="width:32px;height:32px;border:2px solid #7a6240;border-top-color:#C9A96E;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a6240;letter-spacing:0.2em;">CARGANDO MODELO...</span>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  `;
+  canvas.parentElement.style.position = 'relative';
+  canvas.parentElement.appendChild(loadingEl);
 
-  ringData.forEach(d => {
-    const geo = new THREE.TorusGeometry(d.r, d.tube, 8, 80);
-    const mat = new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: 0.5 });
-    const ring = new THREE.Mesh(geo, mat);
-    ring.rotation.x = d.tiltX;
-    ring.rotation.z = d.tiltZ;
-    scene.add(ring);
-    rings.push(ring);
-  });
+  // Cargar modelo
+  const loader = new GLTFLoader();
+  loader.load(
+    '/models/Perro_Cartoon_texturizado.glb',
+    (gltf) => {
+      loadingEl.remove();
 
-  // Floating small geometries
-  const floaters = [];
-  const geoms = [
-    new THREE.OctahedronGeometry(0.25),
-    new THREE.TetrahedronGeometry(0.2),
-    new THREE.IcosahedronGeometry(0.18),
-  ];
+      const model = gltf.scene;
 
-  for (let i = 0; i < 8; i++) {
-    const geo = geoms[i % geoms.length];
-    const mat = new THREE.MeshStandardMaterial({
-      color: i % 2 === 0 ? 0xC9A96E : 0x4A90D9,
-      metalness: 0.8,
-      roughness: 0.2,
-      transparent: true,
-      opacity: 0.7,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    const angle = (i / 8) * Math.PI * 2;
-    const radius = 4 + Math.random();
-    mesh.position.set(Math.cos(angle) * radius, (Math.random() - 0.5) * 2, Math.sin(angle) * radius * 0.3);
-    mesh.userData = { angle, radius, speed: 0.3 + Math.random() * 0.3, yOff: mesh.position.y };
-    scene.add(mesh);
-    floaters.push(mesh);
-  }
+      // Centrar y escalar automáticamente
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 2.0 / maxDim;
+      model.scale.setScalar(scale);
+      // Centrar completamente en el origen (X, Y, Z)
+      model.position.set(
+        -center.x * scale,
+        -center.y * scale,
+        -center.z * scale
+      );
 
-  let w = canvas.clientWidth, h = canvas.clientHeight;
+      // Mapa de colores por nombre de material
+      const colorMap = {
+        'Azul claro':   { color: 0xa6afb8, emissive: null,     roughness: 0.75 },
+        'Azul claroo':  { color: 0x68abbe, emissive: null,     roughness: 0.75 },
+        'Azul oscuroo': { color: 0x333940, emissive: null,     roughness: 0.80 },
+        'Negro':        { color: 0x111111, emissive: null,     roughness: 0.90 },
+        'Emision':      { color: 0x111111, emissive: 0x111111, roughness: 0.40 },
+      };
+
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+
+          const applyColor = (mat) => {
+            const cfg = colorMap[mat.name] ?? { color: 0x5DDDD8, emissive: null, roughness: 0.75 };
+            mat.color = new THREE.Color(cfg.color);
+            mat.metalness = 0.05;
+            mat.roughness = cfg.roughness;
+            if (cfg.emissive) {
+              mat.emissive = new THREE.Color(cfg.emissive);
+              mat.emissiveIntensity = 0.5;
+            }
+            mat.needsUpdate = true;
+          };
+
+          if (Array.isArray(child.material)) {
+            child.material.forEach(applyColor);
+          } else {
+            applyColor(child.material);
+          }
+        }
+      });
+
+      scene.add(model);
+
+      // Centrar cámara al centro real del modelo ya escalado
+      const finalBox = new THREE.Box3().setFromObject(model);
+      const finalCenter = finalBox.getCenter(new THREE.Vector3());
+      const finalSize = finalBox.getSize(new THREE.Vector3());
+      controls.target.copy(finalCenter);
+      camera.position.set(finalCenter.x, finalCenter.y, finalSize.z * 2.8);
+      controls.update();
+    },
+    (progress) => {
+      if (progress.total > 0) {
+        const pct = Math.round((progress.loaded / progress.total) * 100);
+        const span = loadingEl.querySelector('span');
+        if (span) span.textContent = `CARGANDO... ${pct}%`;
+      }
+    },
+    (error) => {
+      console.error('Error cargando modelo:', error);
+      loadingEl.innerHTML = `<span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#C9A96E;">ERROR AL CARGAR MODELO</span>`;
+    }
+  );
+
+  // Resize
   function resize() {
-    w = canvas.clientWidth; h = canvas.clientHeight;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
   }
   resize();
-
   const ro = new ResizeObserver(resize);
   ro.observe(canvas.parentElement || canvas);
-
-  let mouse = { x: 0, y: 0 };
-  document.addEventListener('mousemove', e => {
-    mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
-    mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
-  });
 
   let running = true;
   const clock = new THREE.Clock();
@@ -109,29 +187,14 @@ export function initHeroScene(canvas) {
     requestAnimationFrame(tick);
     const t = clock.getElapsedTime();
 
-    knot.rotation.y = t * 0.25;
-    knot.rotation.x = t * 0.1 + mouse.y * 0.3;
-    wire.rotation.y = t * 0.25;
-    wire.rotation.x = knot.rotation.x;
+    // Pulso suave del anillo dorado
+    ring.material.opacity = 0.3 + Math.sin(t * 2) * 0.2;
+    ring.scale.setScalar(1 + Math.sin(t * 1.5) * 0.02);
 
-    rings[0].rotation.y = t * 0.5;
-    rings[1].rotation.z = t * 0.3;
-    rings[2].rotation.x = t * 0.4;
-
-    floaters.forEach(f => {
-      f.userData.angle += f.userData.speed * 0.005;
-      f.position.x = Math.cos(f.userData.angle) * f.userData.radius + mouse.x * 0.5;
-      f.position.z = Math.sin(f.userData.angle) * f.userData.radius * 0.3;
-      f.position.y = f.userData.yOff + Math.sin(t * 0.8 + f.userData.angle) * 0.3;
-      f.rotation.y += 0.01;
-    });
-
-    goldLight.position.x = Math.sin(t * 0.5) * 6;
-    goldLight.position.y = Math.cos(t * 0.3) * 4;
-
+    controls.update();
     renderer.render(scene, camera);
   }
   tick();
 
-  return () => { running = false; ro.disconnect(); renderer.dispose(); };
+  return () => { running = false; ro.disconnect(); controls.dispose(); renderer.dispose(); };
 }
