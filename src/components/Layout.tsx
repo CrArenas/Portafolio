@@ -72,19 +72,21 @@ function Layout() {
       </nav>
 
       <div className="book-container">
-        <div className="rings">
-          {ringPositions.map((pos) => (
-            <div key={pos} className="ring" style={{ top: `${pos}%` }}>
-              <div className="ring-inner" />
-            </div>
-          ))}
+          <div className="rings">
+            {ringPositions.map((pos) => (
+              <div key={pos} className="ring" style={{ top: `${pos}%` }}>
+                <div className="ring-inner" />
+              </div>
+            ))}
+          </div>
+          <div className="flip-book-wrapper">
+            <FlipBookView
+              ref={bookRef}
+              startPage={currentPage}
+              onFlip={handleFlip}
+            />
+          </div>
         </div>
-        <FlipBookView
-          ref={bookRef}
-          startPage={currentPage}
-          onFlip={handleFlip}
-        />
-      </div>
     </div>
   )
 }

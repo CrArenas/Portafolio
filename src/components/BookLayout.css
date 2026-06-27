@@ -1,3 +1,9 @@
+.flip-book-container {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
 .flip-page {
   position: relative;
   background: #f5f0e8;
