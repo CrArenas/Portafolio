@@ -2,10 +2,11 @@ import { projects, skills } from '../data/projects.js';
 
 export function buildSpine() {
   const pages = [
-    { id: 'home',     label: 'Inicio',     num: '01' },
-    { id: 'projects', label: 'Proyectos',  num: '02' },
-    { id: 'skills',   label: 'Habilidades',num: '03' },
-    { id: 'contact',  label: 'Contacto',   num: '04' },
+    { id: 'home',    label: 'Inicio',                  num: '01' },
+    { id: 'about',   label: 'Acerca de mí',            num: '02' },
+    { id: 'models',  label: 'Mis modelos 3D',          num: '03' },
+    { id: 'games',   label: 'Videojuegos desarrollados', num: '04' },
+    { id: 'contact', label: 'Contacto',                num: '05' },
   ];
 
   return `
@@ -55,44 +56,22 @@ export function buildHomePage() {
   `;
 }
 
-export function buildProjectsPage() {
+export function buildAboutPage() {
   return `
-    <section class="page" id="page-projects">
+    <section class="page" id="page-about">
       <div class="page-number">— 02 —</div>
       <div class="page-header-line"></div>
-      <div class="section-eyebrow">Exploración dimensional</div>
-      <h2 class="section-title">Mis <span>proyectos</span></h2>
-      <p class="section-body">Cada pieza es un universo construido con código, luz y matemáticas. Desliza para explorar.</p>
-      <div class="projects-grid">
-        ${projects.map(p => `
-          <div class="project-card" data-project="${p.id}">
-            <div class="project-thumb">
-              <canvas class="card-canvas" data-project-id="${p.id}"></canvas>
-              <span class="project-thumb-tag">${p.type}</span>
-            </div>
-            <div class="project-info">
-              <div class="project-name">${p.name}</div>
-              <div class="project-desc">${p.desc}</div>
-              <div class="project-tags">
-                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-              </div>
-            </div>
-          </div>
-        `).join('')}
+      <div class="section-eyebrow">Mi historia</div>
+      <h2 class="section-title">Acerca <span>de mí</span></h2>
+      <p class="section-body">Soy Cristian Arenas, desarrollador de videojuegos y artista 3D con sede en Medellín, Colombia. Me apasiona construir mundos digitales que combinen tecnología y creatividad, desde experiencias en realidad virtual hasta modelos listos para impresión 3D.</p>
+      <div class="stats-row" style="margin-top: 40px;">
+        <div class="stat"><span class="stat-num">3+</span><span class="stat-label">Años exp.</span></div>
+        <div class="stat"><span class="stat-num">10+</span><span class="stat-label">Modelos 3D</span></div>
+        <div class="stat"><span class="stat-num">5+</span><span class="stat-label">Videojuegos</span></div>
+        <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Polígonos</span></div>
       </div>
-    </section>
-  `;
-}
-
-export function buildSkillsPage() {
-  return `
-    <section class="page" id="page-skills">
-      <div class="page-number">— 03 —</div>
-      <div class="page-header-line"></div>
-      <div class="section-eyebrow">Arsenal técnico</div>
-      <h2 class="section-title">Habili<span>dades</span></h2>
-      <p class="section-body">Dominio de las herramientas que dan forma a mundos digitales, desde el vertex shader hasta la experiencia de usuario final.</p>
-      <div class="skills-list">
+      <div class="skills-list" style="margin-top: 48px;">
+        <p class="section-eyebrow" style="margin-bottom: 20px;">Herramientas & tecnologías</p>
         ${skills.map(s => `
           <div class="skill-row">
             <div class="skill-header">
@@ -109,10 +88,80 @@ export function buildSkillsPage() {
   `;
 }
 
+export function buildModelsPage() {
+  return `
+    <section class="page" id="page-models">
+      <div class="page-number">— 03 —</div>
+      <div class="page-header-line"></div>
+      <div class="section-eyebrow">Arte digital</div>
+      <h2 class="section-title">Mis modelos <span>3D</span></h2>
+      <p class="section-body">Colección de modelos creados en Blender y ZBrush, desde personajes para videojuegos hasta piezas para impresión 3D.</p>
+      <div class="projects-grid">
+        ${projects.filter(p => p.type === '3D' || p.type === 'Modelo').map(p => `
+          <div class="project-card" data-project="${p.id}">
+            <div class="project-thumb">
+              <canvas class="card-canvas" data-project-id="${p.id}"></canvas>
+              <span class="project-thumb-tag">${p.type}</span>
+            </div>
+            <div class="project-info">
+              <div class="project-name">${p.name}</div>
+              <div class="project-desc">${p.desc}</div>
+              <div class="project-tags">
+                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+        <div class="project-card" style="border-style: dashed; display:flex; align-items:center; justify-content:center; min-height: 200px;">
+          <div style="text-align:center; padding: 24px;">
+            <div style="font-size: 28px; margin-bottom: 12px; color: var(--gold-dim);">＋</div>
+            <div class="project-name" style="color: var(--gold-dim);">Más modelos próximamente</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+export function buildGamesPage() {
+  return `
+    <section class="page" id="page-games">
+      <div class="page-number">— 04 —</div>
+      <div class="page-header-line"></div>
+      <div class="section-eyebrow">Game Development</div>
+      <h2 class="section-title">Videojuegos <span>desarrollados</span></h2>
+      <p class="section-body">Proyectos de videojuegos que combinan diseño, programación y arte 3D para crear experiencias jugables únicas.</p>
+      <div class="projects-grid">
+        ${projects.filter(p => p.type === 'VR' || p.type === 'Juego').map(p => `
+          <div class="project-card" data-project="${p.id}">
+            <div class="project-thumb">
+              <canvas class="card-canvas" data-project-id="${p.id}"></canvas>
+              <span class="project-thumb-tag">${p.type}</span>
+            </div>
+            <div class="project-info">
+              <div class="project-name">${p.name}</div>
+              <div class="project-desc">${p.desc}</div>
+              <div class="project-tags">
+                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+        <div class="project-card" style="border-style: dashed; display:flex; align-items:center; justify-content:center; min-height: 200px;">
+          <div style="text-align:center; padding: 24px;">
+            <div style="font-size: 28px; margin-bottom: 12px; color: var(--gold-dim);">＋</div>
+            <div class="project-name" style="color: var(--gold-dim);">Más juegos próximamente</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 export function buildContactPage() {
   return `
     <section class="page" id="page-contact">
-      <div class="page-number">— 04 —</div>
+      <div class="page-number">— 05 —</div>
       <div class="page-header-line"></div>
       <div class="section-eyebrow">Hablemos</div>
       <h2 class="section-title">Con<span>tacto</span></h2>

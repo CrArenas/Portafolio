@@ -6,8 +6,9 @@ import { flipPage, animateSkillBars, fadeIn } from './components/pageFlip.js';
 import {
   buildSpine,
   buildHomePage,
-  buildProjectsPage,
-  buildSkillsPage,
+  buildAboutPage,
+  buildModelsPage,
+  buildGamesPage,
   buildContactPage,
 } from './components/pages.js';
 import { projects } from './data/projects.js';
@@ -20,8 +21,9 @@ app.innerHTML = `
     <main class="pages-area">
       <canvas id="bg-canvas"></canvas>
       ${buildHomePage()}
-      ${buildProjectsPage()}
-      ${buildSkillsPage()}
+      ${buildAboutPage()}
+      ${buildModelsPage()}
+      ${buildGamesPage()}
       ${buildContactPage()}
     </main>
   </div>
@@ -49,7 +51,7 @@ initCardScenes();
 
 // ── Navigation ─────────────────────────────────────────
 let currentPage = 'home';
-const pageOrder = ['home', 'projects', 'skills', 'contact'];
+const pageOrder = ['home', 'about', 'models', 'games', 'contact'];
 
 function getPage(id) {
   return document.getElementById(`page-${id}`);
@@ -72,10 +74,10 @@ function navigateTo(id) {
 
   flipPage(outEl, inEl, dir, () => {
     // on mid-flip: trigger page-specific effects
-    if (id === 'skills') {
+    if (id === 'about') {
       setTimeout(animateSkillBars, 100);
     }
-    if (id === 'projects') {
+    if (id === 'models' || id === 'games') {
       setTimeout(initCardScenes, 100);
     }
     fadeIn(inEl);
