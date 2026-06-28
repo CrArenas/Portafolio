@@ -1,18 +1,18 @@
-import { projects, skills } from '../data/projects.js';
+import { projects, skills, models3d } from '../data/projects.js';
 
 export function buildSpine() {
   const pages = [
-    { id: 'home',    label: 'Inicio',                  num: '01' },
-    { id: 'about',   label: 'Acerca de mí',            num: '02' },
-    { id: 'models',  label: 'Mis modelos 3D',          num: '03' },
+    { id: 'home',    label: 'Inicio',                   num: '01' },
+    { id: 'about',   label: 'Acerca de mí',             num: '02' },
+    { id: 'models',  label: 'Mis modelos 3D',           num: '03' },
     { id: 'games',   label: 'Videojuegos desarrollados', num: '04' },
-    { id: 'contact', label: 'Contacto',                num: '05' },
+    { id: 'contact', label: 'Contacto',                 num: '05' },
   ];
 
   return `
     <aside class="spine">
       <div class="spine-logo">
-        <div class="title">Dimensiones</div>
+        <div class="title">Portfolio 3D & VR</div>
         <div class="subtitle">Portfolio 3D & VR</div>
         <span class="ornament"></span>
       </div>
@@ -61,15 +61,12 @@ export function buildAboutPage() {
     <section class="page" id="page-about">
       <div class="page-number">— 02 —</div>
       <div class="page-header-line"></div>
-      <div class="section-eyebrow">Mi historia</div>
+      <div class="section-eyebrow">Portafolio</div>
       <h2 class="section-title">Acerca <span>de mí</span></h2>
-      <p class="section-body">Soy Cristian Arenas, desarrollador de videojuegos y artista 3D con sede en Medellín, Colombia. Me apasiona construir mundos digitales que combinen tecnología y creatividad, desde experiencias en realidad virtual hasta modelos listos para impresión 3D.</p>
-      <div class="stats-row" style="margin-top: 40px;">
-        <div class="stat"><span class="stat-num">3+</span><span class="stat-label">Años exp.</span></div>
-        <div class="stat"><span class="stat-num">10+</span><span class="stat-label">Modelos 3D</span></div>
-        <div class="stat"><span class="stat-num">5+</span><span class="stat-label">Videojuegos</span></div>
-        <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Polígonos</span></div>
-      </div>
+      <p class="section-body">Mi nombre es Cristian Andrés, soy un estudiante de Administración de Sistemas Informáticos y técnico en Modelado 3D y Desarrollo de videojuegos. Mi experiencia abarca tanto el desarrollo de software como la creación de contenido digital, participando en proyectos de modelado 3D, videojuegos, realidad virtual y aplicaciones web y móviles.</p>
+      <p class="section-body">He trabajado en la creación de assets 3D para impresión 3D utilizando herramientas como Blender, ZBrush y Photoshop, colaborando con empresas del sector para el desarrollo de modelos optimizados y listos para producción. También he participado en el desarrollo de videojuegos y experiencias de realidad virtual utilizando Unity, contribuyendo tanto en programación como en diseño de mecánicas y el desarrollo de escenarios en videojuegos.</p>
+      <p class="section-body">Además, he desarrollado proyectos académicos como aplicativos web y móviles utilizando tecnologías como Laravel, React y React Native, y cuento con experiencia en el uso de herramientas de inteligencia artificial aplicadas a procesos de desarrollo en distintas áreas.</p>
+      <p class="section-body">Me llama la atención especialmente el diseño de interfaces de usuario, ya sea para videojuegos o aplicaciones, buscando siempre crear experiencias intuitivas, atractivas y funcionales. Disfruto aprender constantemente, enfrentar nuevos desafíos y seguir fortaleciendo mis habilidades para aportar cada vez más valor a los proyectos en los que participo.</p>
       <div class="skills-list" style="margin-top: 48px;">
         <p class="section-eyebrow" style="margin-bottom: 20px;">Herramientas & tecnologías</p>
         ${skills.map(s => `
@@ -97,17 +94,16 @@ export function buildModelsPage() {
       <h2 class="section-title">Mis modelos <span>3D</span></h2>
       <p class="section-body">Colección de modelos creados en Blender y ZBrush, desde personajes para videojuegos hasta piezas para impresión 3D.</p>
       <div class="projects-grid">
-        ${projects.filter(p => p.type === '3D' || p.type === 'Modelo').map(p => `
-          <div class="project-card" data-project="${p.id}">
+        ${models3d.map(m => `
+          <div class="project-card" data-model-id="${m.id}">
             <div class="project-thumb">
-              <canvas class="card-canvas" data-project-id="${p.id}"></canvas>
-              <span class="project-thumb-tag">${p.type}</span>
+              <canvas class="card-canvas" data-model-id="${m.id}"></canvas>
             </div>
             <div class="project-info">
-              <div class="project-name">${p.name}</div>
-              <div class="project-desc">${p.desc}</div>
+              <div class="project-name">${m.name}</div>
+              <div class="project-desc">${m.desc}</div>
               <div class="project-tags">
-                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                ${m.tags.map(t => `<span class="tag">${t}</span>`).join('')}
               </div>
             </div>
           </div>

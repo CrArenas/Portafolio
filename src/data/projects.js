@@ -38,10 +38,47 @@ export const projects = [
 ];
 
 export const skills = [
-  { name: 'Three.js / WebGL', pct: 95 },
-  { name: 'WebXR / VR Development', pct: 90 },
-  { name: 'GLSL Shaders', pct: 80 },
-  { name: 'Blender & 3D Modeling', pct: 85 },
-  { name: 'React / Vite', pct: 88 },
-  { name: 'GSAP Animations', pct: 92 },
+  { name: 'Modelado 3D — Blender & ZBrush', pct: 85 },
+  { name: 'Desarrollo de videojuegos — Unity', pct: 70 },
+  { name: 'Diseño gráfico — Photoshop & Illustrator', pct: 80 },
+  { name: 'Desarrollo web — Laravel & PHP', pct: 75 },
+  { name: 'Programación — Python & Java', pct: 72 },
+  { name: 'Diseño de páginas web', pct: 78 },
+];
+
+// ── MODELOS 3D ──────────────────────────────────────────────────────────────
+// Para agregar un modelo nuevo:
+// 1. Pon el archivo .glb en: public/models/modelos-3d/
+// 2. Copia y pega un bloque nuevo aquí con los datos del modelo
+// ────────────────────────────────────────────────────────────────────────────
+export const models3d = [
+  {
+    id: 'jerry',
+    name: 'Jerry',
+    desc: 'Personaje robot estilo cartoon. Mascota del portafolio.',
+    tags: ['Blender', 'Cell Shading', 'Personaje'],
+    file: 'Perro_Cartoon_texturizado.glb',
+    basePath: '/models/',
+    color: '#5DDDD8',
+    geometry: 'sphere',
+    colorMap: {
+      'Azul claro':   { color: 0xa6afb8, roughness: 0.75, emissive: null },
+      'Azul claroo':  { color: 0x68abbe, roughness: 0.75, emissive: null },
+      'Azul oscuroo': { color: 0x333940, roughness: 0.80, emissive: null },
+      'Negro':        { color: 0x111111, roughness: 0.90, emissive: null },
+      'Emision':      { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
+    },
+  },
+
+  // ── Agrega tus modelos aquí abajo ──
+  // {
+  //   id: 'nombre-unico',
+  //   name: 'Nombre del modelo',
+  //   desc: 'Descripción corta del modelo.',
+  //   tags: ['Blender', 'Impresión 3D'],
+  //   file: 'mi-modelo.glb',
+  //   basePath: '/models/modelos-3d/',
+  //   color: '#C9A96E',
+  //   geometry: 'sphere',   // fallback si no carga: 'sphere', 'box' o 'torus'
+  // },
 ];

@@ -11,7 +11,7 @@ import {
   buildGamesPage,
   buildContactPage,
 } from './components/pages.js';
-import { projects } from './data/projects.js';
+import { projects, models3d } from './data/projects.js';
 
 // ── Build DOM ──────────────────────────────────────────
 const app = document.getElementById('app');
@@ -42,9 +42,22 @@ initHeroScene(heroCanvas);
 // ── Init project card scenes ───────────────────────────
 function initCardScenes() {
   document.querySelectorAll('.card-canvas').forEach(canvas => {
-    const id = canvas.dataset.projectId;
-    const project = projects.find(p => p.id === id);
-    if (project) initCardScene(canvas, project);
+    // Evitar inicializar dos veces el mismo canvas
+    if (canvas.dataset.initialized) return;
+    canvas.dataset.initialized = 'true';
+
+    // Tarjetas de proyectos normales
+    const projectId = canvas.dataset.projectId;
+    if (projectId) {
+      const project = projects.find(p => p.id === projectId);
+      if (project) initCardScene(canvas, project);
+    }
+    // Tarjetas de modelos 3D
+    const modelId = canvas.dataset.modelId;
+    if (modelId) {
+      const model = models3d.find(m => m.id === modelId);
+      if (model) initCardScene(canvas, model);
+    }
   });
 }
 initCardScenes();
