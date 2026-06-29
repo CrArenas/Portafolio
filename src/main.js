@@ -210,7 +210,5 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 gsap.fromTo('.spine', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
 gsap.fromTo('#page-home', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.3, ease: 'power3.out' });
 
-// ── Pre-cargar traducciones en segundo plano ───────────────────────────────
-setTimeout(() => {
-  getTranslations().then(en => { enTexts = en; });
-}, 2000);
+// Pre-cargar traducciones (instantáneo, ya están pre-traducidas)
+getTranslations().then(texts => { enTexts = texts; });
