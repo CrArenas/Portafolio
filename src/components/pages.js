@@ -10,6 +10,39 @@ export function buildSpine() {
   ];
 
   return `
+    <!-- Navbar móvil -->
+    <nav class="mobile-nav" id="mobile-nav">
+      <div class="mobile-nav-top">
+        <div>
+          <div class="mobile-nav-logo">Portfolio 3D & VR</div>
+          <div class="mobile-nav-subtitle">Cristian A. Arenas</div>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div class="mobile-nav-menu" id="mobile-nav-menu">
+        <div class="mobile-nav-links">
+          ${pages.map((p, i) => `
+            <a class="mobile-nav-item${i === 0 ? ' active' : ''}" data-page="${p.id}" href="#">
+              <span class="nav-num">${p.num}</span>
+              <span class="nav-label">${p.label}</span>
+            </a>
+          `).join('')}
+        </div>
+        <div class="mobile-nav-footer">
+          <div>
+            <div class="name">Cristian A. Arenas.</div>
+            <div class="role">3D / VR Developer</div>
+          </div>
+          <a class="social-link" href="https://www.linkedin.com/in/candresav123/">LinkedIn</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Spine desktop -->
     <aside class="spine">
       <div class="spine-logo">
         <div class="title">Portfolio 3D & VR</div>
@@ -171,12 +204,12 @@ export function buildContactPage() {
         <div class="contact-item">
           <div class="contact-icon">✉</div>
           <div class="contact-label">Email</div>
-          <div class="contact-value">crarenasv@unal.edu.co</div>
+          <div class="contact-value">hola@alejandromora.dev</div>
         </div>
         <div class="contact-item">
           <div class="contact-icon">◈</div>
           <div class="contact-label">Ubicación</div>
-          <div class="contact-value">Colombia</div>
+          <div class="contact-value">Medellín, Colombia</div>
         </div>
         <div class="contact-item">
           <div class="contact-icon">◉</div>

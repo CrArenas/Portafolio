@@ -80,8 +80,8 @@ function navigateTo(id) {
   const toIdx   = pageOrder.indexOf(id);
   const dir     = toIdx > fromIdx ? 1 : -1;
 
-  // Update nav
-  document.querySelectorAll('.nav-item').forEach(item => {
+  // Update nav — desktop y móvil
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.page === id);
   });
 
@@ -99,12 +99,28 @@ function navigateTo(id) {
   currentPage = id;
 }
 
-// Nav clicks
-document.querySelectorAll('.nav-item').forEach(item => {
+// Nav clicks — desktop y móvil
+document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
     navigateTo(item.dataset.page);
+    // Cerrar menú móvil al navegar
+    closeMobileMenu();
   });
+});
+
+// Hamburguesa
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-nav-menu');
+
+function closeMobileMenu() {
+  hamburger?.classList.remove('open');
+  mobileMenu?.classList.remove('open');
+}
+
+hamburger?.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
 });
 
 // Keyboard navigation
