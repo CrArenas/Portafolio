@@ -325,6 +325,7 @@ html, body {
   font-size: 15px;
   line-height: 1.8;
   color: var(--parchment-dim);
+  text-align: justify;
   max-width: 100%;
   font-weight: 300;
 }

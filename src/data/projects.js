@@ -94,7 +94,7 @@ export const games = [
   {
     id: 'slenderman-vr',
     name: 'Slenderman - VR',
-    desc: 'A VR game based on the original Slender: The Eight Pages, inspired by the classic Slenderman creepypasta. The project was developed using a combination of custom work and assets from the Unity Asset Store.',
+    desc: 'Un videojuego de realidad virtual inspirado en el clásico creepypasta de Slenderman y basado en el videojuego original Slender: The Eight Pages. El proyecto fue desarrollado en Unity, combinando contenido propio con diversos recursos y assets provenientes de la Unity Asset Store.',
     tags: ['Unity', 'C#', 'VR'],
     youtubeId: 'MYUGQbxZZvo',
   },
