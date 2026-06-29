@@ -56,7 +56,7 @@ export const models3d = [
     id: 'jerry',
     name: 'Jerry',
     desc: 'Personaje robot estilo cartoon. Mascota del portafolio.',
-    tags: ['Blender', 'Cell Shading', 'Personaje'],
+    tags: ['Blender', 'Cell Shading', 'Personaje', 'Impresión 3D'],
     file: 'Perro_Cartoon_texturizado.glb',
     basePath: '/models/',
     color: '#5DDDD8',
@@ -80,5 +80,30 @@ export const models3d = [
   //   basePath: '/models/modelos-3d/',
   //   color: '#C9A96E',
   //   geometry: 'sphere',   // fallback si no carga: 'sphere', 'box' o 'torus'
+  // },
+];
+
+// ── VIDEOJUEGOS ─────────────────────────────────────────────────────────────
+// Para agregar un juego nuevo:
+// 1. Sube el gameplay a YouTube como "No listado"
+// 2. Copia el ID del video (lo que va después de ?v= en la URL)
+// 3. Agrega un bloque nuevo aquí
+// ────────────────────────────────────────────────────────────────────────────
+export const games = [
+  {
+    id: 'slenderman-vr',
+    name: 'Slenderman - VR',
+    desc: 'A VR game based on the original Slender: The Eight Pages, inspired by the classic Slenderman creepypasta. The project was developed using a combination of custom work and assets from the Unity Asset Store.',
+    tags: ['Unity', 'C#', 'VR'],
+    youtubeId: 'MYUGQbxZZvo',
+  },
+
+  // ── Agrega tus juegos aquí abajo ──
+  // {
+  //   id: 'nombre-unico',
+  //   name: 'Nombre del juego',
+  //   desc: 'Descripción corta.',
+  //   tags: ['Unity', 'C#'],
+  //   youtubeId: 'ID_DEL_VIDEO',
   // },
 ];

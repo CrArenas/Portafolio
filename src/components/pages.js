@@ -1,4 +1,4 @@
-import { projects, skills, models3d } from '../data/projects.js';
+import { projects, skills, models3d, games } from '../data/projects.js';
 
 export function buildSpine() {
   const pages = [
@@ -127,23 +127,28 @@ export function buildGamesPage() {
       <div class="section-eyebrow">Game Development</div>
       <h2 class="section-title">Videojuegos <span>desarrollados</span></h2>
       <p class="section-body">Proyectos de videojuegos que combinan diseño, programación y arte 3D para crear experiencias jugables únicas.</p>
-      <div class="projects-grid">
-        ${projects.filter(p => p.type === 'VR' || p.type === 'Juego').map(p => `
-          <div class="project-card" data-project="${p.id}">
-            <div class="project-thumb">
-              <canvas class="card-canvas" data-project-id="${p.id}"></canvas>
-              <span class="project-thumb-tag">${p.type}</span>
+      <div class="games-grid">
+        ${games.map(g => `
+          <div class="game-card">
+            <div class="game-video-wrap">
+              <iframe
+                src="https://www.youtube.com/embed/${g.youtubeId}?rel=0&modestbranding=1"
+                title="${g.name}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
             </div>
             <div class="project-info">
-              <div class="project-name">${p.name}</div>
-              <div class="project-desc">${p.desc}</div>
+              <div class="project-name">${g.name}</div>
+              <div class="project-desc">${g.desc}</div>
               <div class="project-tags">
-                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                ${g.tags.map(t => `<span class="tag">${t}</span>`).join('')}
               </div>
             </div>
           </div>
         `).join('')}
-        <div class="project-card" style="border-style: dashed; display:flex; align-items:center; justify-content:center; min-height: 200px;">
+        <div class="game-card" style="border-style: dashed; display:flex; align-items:center; justify-content:center; min-height: 200px;">
           <div style="text-align:center; padding: 24px;">
             <div style="font-size: 28px; margin-bottom: 12px; color: var(--gold-dim);">＋</div>
             <div class="project-name" style="color: var(--gold-dim);">Más juegos próximamente</div>

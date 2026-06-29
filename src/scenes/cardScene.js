@@ -33,16 +33,12 @@ export function initCardScene(canvas, project) {
   // Plataforma
   const platformGeo = new THREE.CylinderGeometry(1.0, 1.0, 0.04, 64);
   const platformMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1a2e,
-    metalness: 0.6,
-    roughness: 0.3,
-    transparent: true,
-    opacity: 0.7,
+    color: 0x1a1a2e, metalness: 0.6, roughness: 0.3, transparent: true, opacity: 0.7,
   });
   const platform = new THREE.Mesh(platformGeo, platformMat);
   scene.add(platform);
 
-  // Anillo dorado
+  // Anillo
   const ringGeo = new THREE.TorusGeometry(1.1, 0.015, 8, 80);
   const ringMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 });
   const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -51,7 +47,6 @@ export function initCardScene(canvas, project) {
 
   const fallbackColor = new THREE.Color(project.color);
 
-  // Fallback geométrico
   function loadFallback() {
     let geo;
     switch (project.geometry) {
@@ -67,16 +62,15 @@ export function initCardScene(canvas, project) {
     scene.add(wire);
   }
 
-  // Si tiene archivo GLB, cargarlo
   if (project.file) {
-    const basePath = project.basePath || '/models/modelos-3d/';
+    const basePath = project.basePath || '/modelos-3d/';
     const loader = new GLTFLoader();
     loader.load(
       `${basePath}${project.file}`,
       (gltf) => {
         const model = gltf.scene;
 
-        // Auto centrar y escalar
+        // Centrar y escalar
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
@@ -89,47 +83,38 @@ export function initCardScene(canvas, project) {
           -center.z * scale
         );
 
-        // Aplicar colorMap si existe
-        model.traverse(child => {
-          if (child.isMesh) {
+        // Aplicar colorMap si el modelo lo tiene definido
+        if (project.colorMap) {
+          model.traverse(child => {
+            if (!child.isMesh) return;
             const applyMat = (mat) => {
-              if (project.colorMap && project.colorMap[mat.name]) {
-                const cfg = project.colorMap[mat.name];
+              const cfg = project.colorMap[mat.name];
+              if (cfg) {
                 mat.color = new THREE.Color(cfg.color);
+                mat.roughness = cfg.roughness ?? 0.8;
                 mat.metalness = 0.05;
-                mat.roughness = cfg.roughness;
                 if (cfg.emissive) {
                   mat.emissive = new THREE.Color(cfg.emissive);
                   mat.emissiveIntensity = 0.5;
                 }
-              } else if (project.colorMap) {
-                mat.color = fallbackColor;
-                mat.metalness = 0.05;
-                mat.roughness = 0.8;
-              } else if (!mat.map) {
-                mat.color = fallbackColor;
-                mat.metalness = 0.1;
-                mat.roughness = 0.8;
+                mat.needsUpdate = true;
               }
-              if (mat.map) mat.map.colorSpace = THREE.SRGBColorSpace;
-              mat.needsUpdate = true;
             };
             if (Array.isArray(child.material)) child.material.forEach(applyMat);
             else applyMat(child.material);
-          }
-        });
+          });
+        }
 
         scene.add(model);
 
-        // Posicionar plataforma y anillo en la base del modelo
+        // Posicionar plataforma y anillo en la base
         const finalBox = new THREE.Box3().setFromObject(model);
-        const finalSize = finalBox.getSize(new THREE.Vector3());
         const bottomY = finalBox.min.y;
-
         platform.position.y = bottomY - 0.04;
         ring.position.y = bottomY - 0.02;
 
         // Ajustar cámara
+        const finalSize = finalBox.getSize(new THREE.Vector3());
         camera.position.z = Math.max(finalSize.z * 2.5, 3);
         controls.update();
       },
@@ -140,7 +125,6 @@ export function initCardScene(canvas, project) {
     loadFallback();
   }
 
-  // Resize
   function resize() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
@@ -149,7 +133,6 @@ export function initCardScene(canvas, project) {
     renderer.setSize(w, h, false);
   }
   resize();
-
   const ro = new ResizeObserver(resize);
   ro.observe(canvas.parentElement || canvas);
 
