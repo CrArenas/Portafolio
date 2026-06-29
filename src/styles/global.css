@@ -789,3 +789,26 @@ html, body {
 @media (max-width: 640px) {
   .mobile-nav { display: block; }
 }
+/* ── LANGUAGE BUTTON ── */
+.lang-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  padding: 4px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  margin-top: 14px;
+}
+
+.lang-btn:hover {
+  background: rgba(201,169,110,0.1);
+  border-color: var(--gold);
+}
+
+#lang-btn-mobile {
+  margin-top: 0;
+}
