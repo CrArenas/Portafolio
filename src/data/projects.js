@@ -98,6 +98,13 @@ export const games = [
     tags: ['Unity', 'C#', 'VR'],
     youtubeId: 'MYUGQbxZZvo',
   },
+  {
+    id: 'quiz-interactivo-vr',
+    name: 'Quiz Interactivo - VR',
+    desc: 'Un videojuego de realidad virtual con formato de cuestionario interactivo, en el que los jugadores responden preguntas a través de una variedad de minijuegos. Desarrollado en Unity, el proyecto combina mecánicas educativas con una experiencia inmersiva en realidad virtual para ofrecer una forma dinámica y entretenida de aprender. Fue desarrollado utilizando una combinación de contenido propio y diversos recursos de la Unity Asset Store.',
+    tags: ['Unity', 'C#', 'VR'],
+    youtubeId: '1-JZBwsOv3s',
+  },
 
   // ── Agrega tus juegos aquí abajo ──
   // {
