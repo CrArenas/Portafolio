@@ -171,12 +171,12 @@ export function buildContactPage() {
         <div class="contact-item">
           <div class="contact-icon">✉</div>
           <div class="contact-label">Email</div>
-          <div class="contact-value">hola@alejandromora.dev</div>
+          <div class="contact-value">crarenasv@unal.edu.co</div>
         </div>
         <div class="contact-item">
           <div class="contact-icon">◈</div>
           <div class="contact-label">Ubicación</div>
-          <div class="contact-value">Medellín, Colombia</div>
+          <div class="contact-value">Colombia</div>
         </div>
         <div class="contact-item">
           <div class="contact-icon">◉</div>
