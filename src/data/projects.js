@@ -44,6 +44,7 @@ export const skills = [
   { name: 'Desarrollo web — Laravel & PHP', pct: 75 },
   { name: 'Programación — Python & Java', pct: 72 },
   { name: 'Diseño de páginas web', pct: 78 },
+  { name: 'Manejo de herramientas de inteligencia artificial', pct: 75 },
 ];
 
 // ── MODELOS 3D ──────────────────────────────────────────────────────────────
