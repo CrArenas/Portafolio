@@ -44,7 +44,7 @@ export async function getTranslations() {
   const en = await translateObject(es);
 
   // Sobrescribir campos que no se deben traducir
-  en.langBtn = 'ES';
+  en.langBtn = 'Cambiar a Español';
   en.spine.subtitle = es.spine.subtitle;
   en.contact.emailLabel    = 'Email';
   en.contact.locationLabel = 'Location';

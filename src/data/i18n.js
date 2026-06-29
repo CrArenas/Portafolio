@@ -2,7 +2,7 @@
 // Todos los textos del sitio en español. El sistema traduce automáticamente al inglés.
 // Versión — incrementa este número cada vez que agregues textos nuevos
 // para forzar una re-traducción automática.
-export const I18N_VERSION = '1.0';
+export const I18N_VERSION = '1.1';
 
 export const es = {
   // Navbar
@@ -70,5 +70,5 @@ export const es = {
   },
 
   // Botón idioma
-  langBtn: 'EN',
+  langBtn: 'Switch to English',
 };
