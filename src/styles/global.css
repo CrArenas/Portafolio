@@ -593,7 +593,7 @@ html, body {
 @media (max-width: 640px) {
   :root { --spine-w: 0px; }
   .spine { display: none; }
-  .page { padding: 80px 24px 32px; }
+  .page { padding: 80px 24px 120px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
