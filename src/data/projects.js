@@ -49,8 +49,9 @@ export const skills = [
 
 // ── MODELOS 3D ──────────────────────────────────────────────────────────────
 // Para agregar un modelo nuevo:
-// 1. Pon el archivo .glb en: public/models/modelos-3d/
-// 2. Copia y pega un bloque nuevo aquí con los datos del modelo
+// 1. Pon el archivo .glb en: public/models/
+// 2. Agrega un bloque nuevo aquí con los datos del modelo
+// Parámetro scale: >1 más grande, <1 más pequeño (por defecto 1.0)
 // ────────────────────────────────────────────────────────────────────────────
 export const models3d = [
   {
@@ -62,12 +63,33 @@ export const models3d = [
     basePath: '/models/',
     color: '#5DDDD8',
     geometry: 'sphere',
+    scale: 1.0,
     colorMap: {
       'Azul claro':   { color: 0xa6afb8, roughness: 0.75, emissive: null },
       'Azul claroo':  { color: 0x68abbe, roughness: 0.75, emissive: null },
       'Azul oscuroo': { color: 0x333940, roughness: 0.80, emissive: null },
       'Negro':        { color: 0x111111, roughness: 0.90, emissive: null },
       'Emision':      { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
+    },
+  },
+  {
+    id: 'Razor',
+    name: 'Razor Crest',
+    desc: 'Nave Razor Crest de Star Wars',
+    tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D'],
+    file: 'Razor_Crest_opt.glb',
+    basePath: '/models/',
+    color: '#5DDDD8',
+    geometry: 'sphere',
+    scale: 1.0,
+    baseSize: 6.0,
+    scaleAxis: 'y',
+    cameraY: 0.5,
+    platformScale: 0.7,  // ← tamaño de la plataforma (default 1.0)
+    colorMap: {
+      'Azul claro':  { color: 0xa6afb8, roughness: 0.75, emissive: null },
+      'Gris oscuro': { color: 0x333940, roughness: 0.80, emissive: null },
+      'Emision':     { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
     },
   },
 
@@ -78,9 +100,10 @@ export const models3d = [
   //   desc: 'Descripción corta del modelo.',
   //   tags: ['Blender', 'Impresión 3D'],
   //   file: 'mi-modelo.glb',
-  //   basePath: '/models/modelos-3d/',
+  //   basePath: '/models/',
   //   color: '#C9A96E',
-  //   geometry: 'sphere',   // fallback si no carga: 'sphere', 'box' o 'torus'
+  //   geometry: 'sphere',
+  //   scale: 1.0,   // >1 más grande, <1 más pequeño
   // },
 ];
 

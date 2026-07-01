@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function initHeroScene(canvas) {
@@ -88,7 +89,10 @@ export function initHeroScene(canvas) {
   canvas.parentElement.appendChild(loadingEl);
 
   // Cargar modelo
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
   const loader = new GLTFLoader();
+  loader.setDRACOLoader(dracoLoader);
   loader.load(
     '/models/Perro_Cartoon_texturizado.glb',
     (gltf) => {

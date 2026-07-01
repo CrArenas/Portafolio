@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function initCardScene(canvas, project) {
@@ -64,7 +65,10 @@ export function initCardScene(canvas, project) {
 
   if (project.file) {
     const basePath = project.basePath || '/modelos-3d/';
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
     const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
     loader.load(
       `${basePath}${project.file}`,
       (gltf) => {
@@ -74,13 +78,16 @@ export function initCardScene(canvas, project) {
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 1.8 / maxDim;
-        model.scale.setScalar(scale);
+        // baseSize controla qué tan grande se ve en la tarjeta (default 1.8)
+        const baseSize = project.baseSize ?? 1.8;
+        const refDim = project.scaleAxis === 'y' ? size.y : Math.max(size.x, size.y, size.z);
+        const autoScale = baseSize / refDim;
+        const scaleFactor = autoScale * (project.scale ?? 1.0);
+        model.scale.setScalar(scaleFactor);
         model.position.set(
-          -center.x * scale,
-          -center.y * scale,
-          -center.z * scale
+          -center.x * scaleFactor,
+          -center.y * scaleFactor,
+          -center.z * scaleFactor
         );
 
         // Aplicar colorMap si el modelo lo tiene definido
@@ -107,15 +114,27 @@ export function initCardScene(canvas, project) {
 
         scene.add(model);
 
-        // Posicionar plataforma y anillo en la base
-        const finalBox = new THREE.Box3().setFromObject(model);
-        const bottomY = finalBox.min.y;
-        platform.position.y = bottomY - 0.04;
-        ring.position.y = bottomY - 0.02;
-
-        // Ajustar cámara
+        // Posicionar plataforma y anillo en la base del modelo escalado
+        const finalBox  = new THREE.Box3().setFromObject(model);
         const finalSize = finalBox.getSize(new THREE.Vector3());
-        camera.position.z = Math.max(finalSize.z * 2.5, 3);
+        const bottomY   = finalBox.min.y;
+
+        // Escalar plataforma y anillo — independiente por modelo
+        const platformScale = project.platformScale ?? 1.0;
+        const ringRadius = Math.max(finalSize.x, finalSize.z) * 0.6 * platformScale;
+        platform.geometry.dispose();
+        platform.geometry = new THREE.CylinderGeometry(ringRadius, ringRadius, 0.04, 64);
+        ring.geometry.dispose();
+        ring.geometry = new THREE.TorusGeometry(ringRadius * 1.05, 0.015, 8, 80);
+
+        platform.position.y = bottomY - 0.04;
+        ring.position.y     = bottomY - 0.02;
+
+        // Ajustar cámara — distancia fija relativa al baseSize
+        const camDist = (project.baseSize ?? 1.8) * 1.6;
+        const camY = project.cameraY ?? 0;
+        camera.position.set(0, camY, Math.max(camDist, 2.5));
+        controls.target.set(0, 0, 0);
         controls.update();
       },
       null,
