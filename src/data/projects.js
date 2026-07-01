@@ -87,8 +87,8 @@ export const models3d = [
     cameraY: 0.5,
     platformScale: 0.7,  // ← tamaño de la plataforma (default 1.0)
     colorMap: {
-      'Azul claro':  { color: 0xa6afb8, roughness: 0.75, emissive: null },
-      'Gris oscuro': { color: 0x333940, roughness: 0.80, emissive: null },
+      'Azul claro':  { color: 0x8f8b8b, roughness: 0.75, emissive: null },
+      'Gris oscuro': { color: 0x292d33, roughness: 0.80, emissive: null },
       'Emision':     { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
     },
   },
