@@ -93,6 +93,27 @@ export const models3d = [
     },
   },
 
+  {
+    id: 'Droid_B1',
+    name: 'Droide de batalla B1',
+    desc: 'Droide de batalla B1 de Star Wars',
+    tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Personaje'],
+    file: 'Droide_B1_opt.glb',
+    basePath: '/models/',
+    color: '#5DDDD8',
+    geometry: 'sphere',
+    scale: 1.2,
+    baseSize: 6.0,
+    scaleAxis: 'y',
+    cameraY: 0.5,
+    platformScale: 0.9,  // ← tamaño de la plataforma (default 1.0)
+    colorMap: {
+      'Azul claro':  { color: 0xa9a862, roughness: 0.75, emissive: null },
+      'Azul oscuroo': { color: 0x434a52, roughness: 0.80, emissive: null },
+      'Emision':     { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
+    },
+  },
+
   // ── Agrega tus modelos aquí abajo ──
   // {
   //   id: 'nombre-unico',
