@@ -95,7 +95,7 @@ export const models3d = [
 
   {
     id: 'Droid_B1',
-    name: 'Droide de batalla B1',
+    name: 'Droide de batalla B1 + Arma',
     desc: 'Droide de batalla B1 de Star Wars',
     tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Personaje'],
     file: 'Droide_B1_opt.glb',
