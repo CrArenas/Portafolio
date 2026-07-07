@@ -46,22 +46,68 @@ buildApp(es);
 const bgCanvas = document.getElementById('bg-canvas');
 bgCanvas.width  = bgCanvas.clientWidth;
 bgCanvas.height = bgCanvas.clientHeight;
-initBgScene(bgCanvas);
+if (!isMobileSafari) initBgScene(bgCanvas);
 initHeroScene(document.getElementById('hero-canvas'));
+
+// Detectar Safari móvil
+const isMobileSafari = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+  (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') && window.innerWidth < 768);
+
+function drawStaticPlaceholder(canvas, item) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const w = canvas.clientWidth  || 300;
+  const h = canvas.clientHeight || 300;
+  canvas.width  = w;
+  canvas.height = h;
+
+  // Fondo degradado
+  const grad = ctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, '#1a1a35');
+  grad.addColorStop(1, '#0d1a2e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Círculo central con color del modelo
+  ctx.beginPath();
+  ctx.arc(w / 2, h / 2, Math.min(w, h) * 0.28, 0, Math.PI * 2);
+  ctx.fillStyle = item.color + '33';
+  ctx.fill();
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Nombre del modelo
+  ctx.fillStyle = '#E8E0D0';
+  ctx.font = `bold ${Math.floor(w * 0.07)}px Cinzel, serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(item.name, w / 2, h / 2);
+
+  // Label 3D
+  ctx.fillStyle = '#C9A96E';
+  ctx.font = `${Math.floor(w * 0.045)}px JetBrains Mono, monospace`;
+  ctx.fillText('3D MODEL', w / 2, h / 2 + Math.min(w, h) * 0.18);
+}
 
 function initCardScenes() {
   document.querySelectorAll('.card-canvas').forEach(canvas => {
     if (canvas.dataset.initialized) return;
     canvas.dataset.initialized = 'true';
+
     const projectId = canvas.dataset.projectId;
-    if (projectId) {
-      const project = projects.find(p => p.id === projectId);
-      if (project) initCardScene(canvas, project);
-    }
-    const modelId = canvas.dataset.modelId;
-    if (modelId) {
-      const model = models3d.find(m => m.id === modelId);
-      if (model) initCardScene(canvas, model);
+    const modelId   = canvas.dataset.modelId;
+    const item = projectId
+      ? projects.find(p => p.id === projectId)
+      : models3d.find(m => m.id === modelId);
+
+    if (!item) return;
+
+    if (isMobileSafari) {
+      // En Safari móvil usar canvas 2D estático para evitar crash de WebGL
+      drawStaticPlaceholder(canvas, item);
+    } else {
+      initCardScene(canvas, item);
     }
   });
 }

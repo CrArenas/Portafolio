@@ -58,6 +58,7 @@ export const models3d = [
     id: 'jerry',
     name: 'Jerry',
     desc: 'Personaje robot estilo cartoon. Mascota del portafolio.',
+    image: '/images/jerry.png',  // ← screenshot del modelo
     tags: ['Blender', 'Cell Shading', 'Personaje', 'Impresión 3D'],
     file: 'Perro_Cartoon_texturizado.glb',
     basePath: '/models/',
@@ -76,6 +77,7 @@ export const models3d = [
     id: 'Razor',
     name: 'Razor Crest',
     desc: 'Nave Razor Crest de Star Wars',
+    image: '/images/razor-crest.png',  // ← screenshot del modelo
     tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D'],
     file: 'Razor_Crest_opt.glb',
     basePath: '/models/',
@@ -97,6 +99,7 @@ export const models3d = [
     id: 'Droid_B1',
     name: 'Droide de batalla B1 + Arma',
     desc: 'Droide de batalla B1 de Star Wars',
+    image: '/images/droide-b1.png',  // ← screenshot del modelo
     tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Personaje'],
     file: 'Droide_B1_opt.glb',
     basePath: '/models/',
@@ -118,6 +121,7 @@ export const models3d = [
     id: 'Robot_AT-TE',
     name: 'Robot AT-TE',
     desc: 'Robot AT-TE de Star Wars',
+    image: '/images/robot-atte.png',  // ← screenshot del modelo
     tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Robot'],
     file: 'Robot_ATTE_opt.glb',
     basePath: '/models/',
