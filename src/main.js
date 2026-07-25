@@ -17,6 +17,13 @@ import { es } from './data/i18n.js';
 import { getTranslations } from './data/translator.js';
 import { gsap } from 'gsap';
 
+// ── Detectar Safari móvil — DEBE IR ANTES DE USARSE ───────────────────────
+const isMobileSafari =
+  /iP(hone|od|ad)/.test(navigator.userAgent) ||
+  (navigator.userAgent.includes('Safari') &&
+   !navigator.userAgent.includes('Chrome') &&
+   window.innerWidth < 768);
+
 // ── Estado de idioma ───────────────────────────────────────────────────────
 let currentLang = 'es';
 let enTexts = null;
@@ -49,18 +56,31 @@ bgCanvas.height = bgCanvas.clientHeight;
 if (!isMobileSafari) initBgScene(bgCanvas);
 initHeroScene(document.getElementById('hero-canvas'));
 
-// Detectar Safari móvil
-const isMobileSafari = /iP(hone|od|ad)/.test(navigator.userAgent) ||
-  (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') && window.innerWidth < 768);
-
+// ── Placeholder 2D para Safari móvil ──────────────────────────────────────
 function drawStaticPlaceholder(canvas, item) {
+  // Si tiene imagen estática, usarla
+  if (item.image) {
+    const w = canvas.clientWidth  || 300;
+    const h = canvas.clientHeight || 300;
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, w, h);
+    img.onerror = () => drawCirclePlaceholder(ctx, w, h, item);
+    img.src = item.image;
+    return;
+  }
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const w = canvas.clientWidth  || 300;
   const h = canvas.clientHeight || 300;
   canvas.width  = w;
   canvas.height = h;
+  drawCirclePlaceholder(ctx, w, h, item);
+}
 
+function drawCirclePlaceholder(ctx, w, h, item) {
   // Fondo degradado
   const grad = ctx.createLinearGradient(0, 0, w, h);
   grad.addColorStop(0, '#1a1a35');
@@ -68,28 +88,43 @@ function drawStaticPlaceholder(canvas, item) {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
-  // Círculo central con color del modelo
+  // Círculo central
+  const radius = Math.min(w, h) * 0.32;
   ctx.beginPath();
-  ctx.arc(w / 2, h / 2, Math.min(w, h) * 0.28, 0, Math.PI * 2);
-  ctx.fillStyle = item.color + '33';
+  ctx.arc(w / 2, h / 2, radius, 0, Math.PI * 2);
+  ctx.fillStyle = item.color + '22';
   ctx.fill();
   ctx.strokeStyle = item.color;
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Nombre del modelo
-  ctx.fillStyle = '#E8E0D0';
-  ctx.font = `bold ${Math.floor(w * 0.07)}px Cinzel, serif`;
+  // Icono hexágono
+  ctx.fillStyle = item.color + '88';
+  ctx.font = `${Math.floor(radius * 0.65)}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(item.name, w / 2, h / 2);
+  ctx.fillText('⬡', w / 2, h / 2 - radius * 0.12);
 
-  // Label 3D
+  // Nombre — reducir fuente si es muy largo
+  const name = item.name;
+  let fontSize = Math.floor(w * 0.072);
+  ctx.font = `bold ${fontSize}px serif`;
+  while (ctx.measureText(name).width > radius * 1.7 && fontSize > 9) {
+    fontSize -= 1;
+    ctx.font = `bold ${fontSize}px serif`;
+  }
+  ctx.fillStyle = '#E8E0D0';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name, w / 2, h / 2 + radius * 0.52);
+
+  // Label
   ctx.fillStyle = '#C9A96E';
-  ctx.font = `${Math.floor(w * 0.045)}px JetBrains Mono, monospace`;
-  ctx.fillText('3D MODEL', w / 2, h / 2 + Math.min(w, h) * 0.18);
+  ctx.font = `${Math.floor(w * 0.038)}px monospace`;
+  ctx.fillText('3D MODEL', w / 2, h / 2 + radius * 0.88);
 }
 
+// ── Init card scenes ───────────────────────────────────────────────────────
 function initCardScenes() {
   document.querySelectorAll('.card-canvas').forEach(canvas => {
     if (canvas.dataset.initialized) return;
@@ -104,7 +139,6 @@ function initCardScenes() {
     if (!item) return;
 
     if (isMobileSafari) {
-      // En Safari móvil usar canvas 2D estático para evitar crash de WebGL
       drawStaticPlaceholder(canvas, item);
     } else {
       initCardScene(canvas, item);
@@ -174,19 +208,16 @@ hamburger?.addEventListener('click', () => {
 
 // ── Cambio de idioma ───────────────────────────────────────────────────────
 async function switchLanguage() {
-  // Deshabilitar botones mientras carga
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.textContent = '...';
     btn.disabled = true;
   });
 
   if (currentLang === 'es') {
-    // Cambiar a inglés
     if (!enTexts) enTexts = await getTranslations();
     currentLang = 'en';
     rebuildPages(enTexts);
   } else {
-    // Volver a español
     currentLang = 'es';
     rebuildPages(es);
   }
@@ -195,21 +226,16 @@ async function switchLanguage() {
 function rebuildPages(texts) {
   const savedPage = currentPage;
 
-  // Guardar canvases activos para no re-inicializarlos
   document.querySelectorAll('.card-canvas').forEach(c => {
     c.dataset.initialized = '';
   });
 
   buildApp(texts);
-
-  // Re-conectar eventos
   attachEvents();
 
-  // Re-init scenes
-  initBgScene(document.getElementById('bg-canvas'));
+  if (!isMobileSafari) initBgScene(document.getElementById('bg-canvas'));
   initHeroScene(document.getElementById('hero-canvas'));
 
-  // Ir a la página que estaba activa
   currentPage = 'home';
   if (savedPage !== 'home') {
     const inEl = getPage(savedPage);
@@ -256,5 +282,5 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 gsap.fromTo('.spine', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
 gsap.fromTo('#page-home', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.3, ease: 'power3.out' });
 
-// Pre-cargar traducciones (instantáneo, ya están pre-traducidas)
+// Pre-cargar traducciones
 getTranslations().then(texts => { enTexts = texts; });
