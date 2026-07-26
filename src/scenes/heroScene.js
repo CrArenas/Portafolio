@@ -1,184 +1,159 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function initHeroScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-  camera.position.set(0, 1, 5);
+  const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
+  camera.position.set(0, 0, 22);
 
-  // Controls — orbit con el mouse
-  const controls = new OrbitControls(camera, canvas);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.enableZoom = true;
-  controls.minDistance = 2;
-  controls.maxDistance = 10;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 1.2;
-  controls.target.set(0, 0.5, 0);
+  // ── Grid de puntos ──────────────────────────────────────────────────────
+  const COLS = 32;
+  const ROWS = 20;
+  const SPACING = 1.4;
+  const count = COLS * ROWS;
 
-  // Luces
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-  scene.add(ambientLight);
+  const positions = new Float32Array(count * 3);
+  const randoms   = new Float32Array(count);
+  const speeds    = new Float32Array(count);
 
-  const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.5);
-  keyLight.position.set(4, 6, 4);
-  keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(1024, 1024);
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 30;
-  keyLight.shadow.camera.left = -5;
-  keyLight.shadow.camera.right = 5;
-  keyLight.shadow.camera.top = 5;
-  keyLight.shadow.camera.bottom = -5;
-  scene.add(keyLight);
-
-  const fillLight = new THREE.DirectionalLight(0x4A90D9, 0.8);
-  fillLight.position.set(-4, 2, -2);
-  scene.add(fillLight);
-
-  const rimLight = new THREE.PointLight(0xC9A96E, 1.2, 15);
-  rimLight.position.set(0, 4, -3);
-  scene.add(rimLight);
-
-  // Plataforma sutil bajo el modelo
-  const platformGeo = new THREE.CylinderGeometry(1.4, 1.4, 0.05, 64);
-  const platformMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1a2e,
-    metalness: 0.6,
-    roughness: 0.3,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const platform = new THREE.Mesh(platformGeo, platformMat);
-  platform.position.y = -0.8;
-  platform.receiveShadow = true;
-  scene.add(platform);
-
-  // Anillo dorado bajo la plataforma
-  const ringGeo = new THREE.TorusGeometry(1.5, 0.02, 8, 80);
-  const ringMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 });
-  const ring = new THREE.Mesh(ringGeo, ringMat);
-  ring.rotation.x = Math.PI / 2;
-  ring.position.y = -0.8;
-  scene.add(ring);
-
-  // Spinner de carga
-  const loadingEl = document.createElement('div');
-  loadingEl.style.cssText = `
-    position:absolute; inset:0; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:12px; pointer-events:none;
-  `;
-  loadingEl.innerHTML = `
-    <div style="width:32px;height:32px;border:2px solid #7a6240;border-top-color:#C9A96E;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a6240;letter-spacing:0.2em;">CARGANDO MODELO...</span>
-    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-  `;
-  canvas.parentElement.style.position = 'relative';
-  canvas.parentElement.appendChild(loadingEl);
-
-  // Cargar modelo
-  const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-  const loader = new GLTFLoader();
-  loader.setDRACOLoader(dracoLoader);
-  loader.load(
-    '/models/Perro_Cartoon_texturizado.glb',
-    (gltf) => {
-      loadingEl.remove();
-
-      const model = gltf.scene;
-
-      // Centrar y escalar automáticamente
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-      const center = box.getCenter(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 2.0 / maxDim;
-      model.scale.setScalar(scale);
-      // Centrar completamente en el origen (X, Y, Z)
-      model.position.set(
-        -center.x * scale,
-        -center.y * scale, // Ajuste vertical para que el modelo quede sobre la plataforma
-        -center.z * scale
-      );
-
-      // Mapa de colores por nombre de material
-      const colorMap = {
-        'Azul claro':   { color: 0xa6afb8, emissive: null,     roughness: 0.75 },
-        'Azul claroo':  { color: 0x68abbe, emissive: null,     roughness: 0.75 },
-        'Azul oscuroo': { color: 0x333940, emissive: null,     roughness: 0.80 },
-        'Negro':        { color: 0x111111, emissive: null,     roughness: 0.90 },
-        'Emision':      { color: 0x111111, emissive: 0x111111, roughness: 0.40 },
-      };
-
-      model.traverse(child => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-
-          const applyColor = (mat) => {
-            const cfg = colorMap[mat.name] ?? { color: 0x5DDDD8, emissive: null, roughness: 0.75 };
-            mat.color = new THREE.Color(cfg.color);
-            mat.metalness = 0.05;
-            mat.roughness = cfg.roughness;
-            if (cfg.emissive) {
-              mat.emissive = new THREE.Color(cfg.emissive);
-              mat.emissiveIntensity = 0.5;
-            }
-            mat.needsUpdate = true;
-          };
-
-          if (Array.isArray(child.material)) {
-            child.material.forEach(applyColor);
-          } else {
-            applyColor(child.material);
-          }
-        }
-      });
-
-      scene.add(model);
-
-      // Centrar cámara al centro real del modelo ya escalado
-      const finalBox = new THREE.Box3().setFromObject(model);
-
-      // Altura superior de la plataforma
-      const platformTop = -0.8 + 0.025; // posición + mitad del grosor (0.05 / 2)
-
-      // Mover el modelo para que su parte inferior toque la plataforma
-      model.position.y += platformTop - finalBox.min.y;
-
-      const finalCenter = finalBox.getCenter(new THREE.Vector3());
-      const finalSize = finalBox.getSize(new THREE.Vector3());
-      controls.target.copy(finalCenter);
-      camera.position.set(finalCenter.x, finalCenter.y, finalSize.z * 2.8);
-      controls.update();
-    },
-    (progress) => {
-      if (progress.total > 0) {
-        const pct = Math.round((progress.loaded / progress.total) * 100);
-        const span = loadingEl.querySelector('span');
-        if (span) span.textContent = `CARGANDO... ${pct}%`;
-      }
-    },
-    (error) => {
-      console.error('Error cargando modelo:', error);
-      loadingEl.innerHTML = `<span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#C9A96E;">ERROR AL CARGAR MODELO</span>`;
+  let i = 0;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      positions[i * 3]     = (c - COLS / 2) * SPACING;
+      positions[i * 3 + 1] = (r - ROWS / 2) * SPACING;
+      positions[i * 3 + 2] = 0;
+      randoms[i] = Math.random();
+      speeds[i]  = 0.5 + Math.random() * 1.0;
+      i++;
     }
-  );
+  }
 
-  // Resize
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('aRandom',  new THREE.BufferAttribute(randoms, 1));
+  geo.setAttribute('aSpeed',   new THREE.BufferAttribute(speeds, 1));
+
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: {
+      uTime:   { value: 0 },
+      uMouse:  { value: new THREE.Vector2(0, 0) },
+      uColor1: { value: new THREE.Color('#C9A96E') },
+      uColor2: { value: new THREE.Color('#4A90D9') },
+      uColor3: { value: new THREE.Color('#ffffff') },
+    },
+    vertexShader: `
+      attribute float aRandom;
+      attribute float aSpeed;
+      uniform float uTime;
+      uniform vec2  uMouse;
+      varying float vAlpha;
+      varying float vMix;
+      varying float vGlow;
+
+      void main() {
+        vec3 pos = position;
+
+        // Onda principal
+        float wave = sin(pos.x * 0.22 + uTime * aSpeed * 0.6)
+                   * cos(pos.y * 0.22 + uTime * aSpeed * 0.4)
+                   * 2.8;
+
+        // Segunda onda diagonal
+        float wave2 = sin((pos.x + pos.y) * 0.15 + uTime * 0.35) * 1.2;
+        pos.z += wave + wave2;
+
+        // Repulsión del mouse
+        vec2 mouseWorld = uMouse * vec2(21.0, 13.0);
+        vec2 diff  = pos.xy - mouseWorld;
+        float dist = length(diff);
+        float push = smoothstep(7.0, 0.0, dist) * 5.5;
+        pos.z += push;
+        pos.xy += normalize(diff + 0.001) * push * 0.5;
+
+        float waveNorm = abs(wave + wave2) / 4.0;
+        vAlpha = 0.5 + 0.5 * waveNorm;
+        vGlow  = smoothstep(5.0, 0.0, dist); // brilla cerca del mouse
+        vMix   = aRandom;
+
+        vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+        // Puntos más grandes en crestas de onda y cerca del mouse
+        float size = 4.5 + aRandom * 3.5 + waveNorm * 3.0 + vGlow * 6.0;
+        gl_PointSize = size * (22.0 / -mvPos.z);
+        gl_Position  = projectionMatrix * mvPos;
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor1;
+      uniform vec3 uColor2;
+      uniform vec3 uColor3;
+      varying float vAlpha;
+      varying float vMix;
+      varying float vGlow;
+
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+
+        // Núcleo brillante
+        float core  = smoothstep(0.5, 0.05, d);
+        float halo  = smoothstep(0.5, 0.2, d) * 0.4;
+        float alpha = (core + halo) * vAlpha;
+
+        vec3 color = mix(uColor1, uColor2, vMix);
+        // Cerca del mouse vira a blanco brillante
+        color = mix(color, uColor3, vGlow * 0.7);
+
+        gl_FragColor = vec4(color, alpha);
+      }
+    `,
+  });
+
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  // ── Líneas de conexión ──────────────────────────────────────────────────
+  const baseX = (c, r) => (c - COLS / 2) * SPACING;
+  const baseY = (c, r) => (r - ROWS / 2) * SPACING;
+  const lineVerts = [];
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (c < COLS - 1) {
+        lineVerts.push(baseX(c,r), baseY(c,r), 0, baseX(c+1,r), baseY(c+1,r), 0);
+      }
+      if (r < ROWS - 1) {
+        lineVerts.push(baseX(c,r), baseY(c,r), 0, baseX(c,r+1), baseY(c,r+1), 0);
+      }
+    }
+  }
+
+  const lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lineVerts), 3));
+  scene.add(new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
+    color: 0x4A90D9, transparent: true, opacity: 0.12,
+  })));
+
+  // ── Mouse ───────────────────────────────────────────────────────────────
+  const mouse = new THREE.Vector2(0, 0);
+  const target = new THREE.Vector2(0, 0);
+
+  const onMouseMove = (e) => {
+    target.x =  (e.clientX / window.innerWidth  - 0.5) * 2;
+    target.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+  };
+  const onTouchMove = (e) => {
+    target.x =  (e.touches[0].clientX / window.innerWidth  - 0.5) * 2;
+    target.y = -(e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+  };
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('touchmove', onTouchMove, { passive: true });
+
+  // ── Resize ──────────────────────────────────────────────────────────────
   function resize() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
@@ -190,22 +165,25 @@ export function initHeroScene(canvas) {
   const ro = new ResizeObserver(resize);
   ro.observe(canvas.parentElement || canvas);
 
+  // ── Loop ────────────────────────────────────────────────────────────────
   let running = true;
   const clock = new THREE.Clock();
 
   function tick() {
     if (!running) return;
     requestAnimationFrame(tick);
-    const t = clock.getElapsedTime();
-
-    // Pulso suave del anillo dorado
-    ring.material.opacity = 0.3 + Math.sin(t * 2) * 0.2;
-    ring.scale.setScalar(1 + Math.sin(t * 1.5) * 0.02);
-
-    controls.update();
+    mouse.lerp(target, 0.05);
+    mat.uniforms.uTime.value  = clock.getElapsedTime();
+    mat.uniforms.uMouse.value.copy(mouse);
     renderer.render(scene, camera);
   }
   tick();
 
-  return () => { running = false; ro.disconnect(); controls.dispose(); renderer.dispose(); };
+  return () => {
+    running = false;
+    ro.disconnect();
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('touchmove', onTouchMove);
+    renderer.dispose();
+  };
 }

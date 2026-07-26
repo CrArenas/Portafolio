@@ -92,7 +92,6 @@ export function buildHomePage() {
         </div>
         <div class="home-canvas-wrap">
           <canvas id="hero-canvas"></canvas>
-          <span class="hero-canvas-label">${t.home.canvasLabel}</span>
         </div>
       </div>
     </section>
@@ -104,8 +103,16 @@ export function buildAboutPage() {
     <section class="page" id="page-about">
       <div class="page-number">— 02 —</div>
       <div class="page-header-line"></div>
-      <div class="section-eyebrow">${t.about.eyebrow}</div>
-      <h2 class="section-title">${t.about.title.includes('de mí') ? 'Acerca <span>de mí</span>' : 'About <span>me</span>'}</h2>
+      <div class="about-header">
+        <div class="profile-photo-wrap">
+          <img src="/images/profile.jpg" alt="Cristian A. Arenas" class="profile-photo" />
+          <div class="profile-photo-ring"></div>
+        </div>
+        <div>
+          <div class="section-eyebrow">${t.about.eyebrow}</div>
+          <h2 class="section-title">${t.about.title.includes('de mí') ? 'Acerca <span>de mí</span>' : 'About <span>me</span>'}</h2>
+        </div>
+      </div>
       <p class="section-body">${t.about.p1}</p>
       <p class="section-body">${t.about.p2}</p>
       <p class="section-body">${t.about.p3}</p>
