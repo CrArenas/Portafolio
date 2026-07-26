@@ -151,13 +151,16 @@ export function buildModelsPage() {
             </div>
           </div>
         `).join('')}
-        <div class="project-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:200px;">
-          <div style="text-align:center;padding:24px;">
-            <div style="font-size:28px;margin-bottom:12px;color:var(--gold-dim);">＋</div>
-            <div class="project-name" style="color:var(--gold-dim);">${t.models.comingSoon}</div>
-          </div>
-        </div>
       </div>
+
+      <a href="https://www.artstation.com/carenas" target="_blank" rel="noopener noreferrer" class="artstation-card">
+        <div class="artstation-card-content">
+          <div class="artstation-eyebrow">${t.models.artStationLabel ?? 'Más de mis modelos 3D en'}</div>
+          <div class="artstation-name">ArtStation <span>— Cristian A.</span></div>
+          <div class="artstation-url">artstation.com/carenas ↗</div>
+        </div>
+        <div class="artstation-icon">⬡</div>
+      </a>
     </section>
   `;
 }
@@ -211,26 +214,16 @@ export function buildContactPage() {
       <h2 class="section-title">${t.contact.title.includes('Contacto') ? 'Con<span>tacto</span>' : 'Con<span>tact</span>'}</h2>
       <p class="section-body">${t.contact.body}</p>
       <div class="contact-grid">
-        <div class="contact-item">
-          <div class="contact-icon">✉</div>
-          <div class="contact-label">${t.contact.emailLabel}</div>
-          <div class="contact-value">-</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">◈</div>
-          <div class="contact-label">${t.contact.locationLabel}</div>
-          <div class="contact-value">${t.contact.locationValue}</div>
-        </div>
-        <div class="contact-item">
+        <a class="contact-item" href="https://www.linkedin.com/in/candresav123/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
           <div class="contact-icon">◉</div>
-          <div class="contact-label">${t.contact.availLabel}</div>
-          <div class="contact-value">${t.contact.availValue}</div>
-        </div>
-        <div class="contact-item">
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-value" style="color:var(--holo);">Cristian A. Arenas ↗</div>
+        </a>
+        <a class="contact-item" href="https://www.artstation.com/carenas" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
           <div class="contact-icon">⬡</div>
-          <div class="contact-label">${t.contact.replyLabel}</div>
-          <div class="contact-value">${t.contact.replyValue}</div>
-        </div>
+          <div class="contact-label">ArtStation</div>
+          <div class="contact-value" style="color:var(--holo);">Portafolio Modelos 3D Hard Surface ↗</div>
+        </a>
       </div>
     </section>
   `;

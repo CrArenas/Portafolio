@@ -55,25 +55,6 @@ export const skills = [
 // ────────────────────────────────────────────────────────────────────────────
 export const models3d = [
   {
-    id: 'jerry',
-    name: 'Jerry',
-    desc: 'Personaje robot estilo cartoon. Mascota del portafolio.',
-    image: '/images/jerry.png',  // ← screenshot del modelo
-    tags: ['Blender', 'Cell Shading', 'Personaje', 'Impresión 3D'],
-    file: 'Perro_Cartoon_texturizado.glb',
-    basePath: '/models/',
-    color: '#5DDDD8',
-    geometry: 'sphere',
-    scale: 1.0,
-    colorMap: {
-      'Azul claro':   { color: 0xa6afb8, roughness: 0.75, emissive: null },
-      'Azul claroo':  { color: 0x68abbe, roughness: 0.75, emissive: null },
-      'Azul oscuroo': { color: 0x333940, roughness: 0.80, emissive: null },
-      'Negro':        { color: 0x111111, roughness: 0.90, emissive: null },
-      'Emision':      { color: 0x111111, roughness: 0.40, emissive: 0x111111 },
-    },
-  },
-  {
     id: 'Razor',
     name: 'Razor Crest',
     desc: 'Nave Razor Crest de Star Wars',
