@@ -8,12 +8,12 @@ export const es = {
     home:    'Inicio',
     about:   'Acerca de mí',
     models:  'Mis modelos 3D',
-    games:   'Videojuegos desarrollados',
+    games:   'Proyectos desarrollados',
     contact: 'Contacto',
   },
   spine: {
     role:     '3D / VR Developer',
-    subtitle: 'Portfolio 3D & VR',
+    subtitle: 'Cristian A - Interactive Portfolio',
   },
   home: {
     eyebrow:     'Portafolio',
@@ -38,7 +38,7 @@ export const es = {
   },
   games: {
     eyebrow:    'Game Development',
-    title:      'Videojuegos desarrollados',
+    title:      'Proyectos desarrollados',
     body:       'Proyectos de videojuegos que combinan diseño, programación y arte 3D para crear experiencias jugables únicas.',
     comingSoon: 'Más juegos próximamente',
   },
@@ -63,12 +63,12 @@ export const en = {
     home:    'Home',
     about:   'About me',
     models:  'My 3D models',
-    games:   'Games developed',
+    games:   'Projects developed',
     contact: 'Contact',
   },
   spine: {
     role:     '3D / VR Developer',
-    subtitle: 'Portfolio 3D & VR',
+    subtitle: 'Cristian A - Interactive Portfolio',
   },
   home: {
     eyebrow:     'Portfolio',
@@ -93,7 +93,7 @@ export const en = {
   },
   games: {
     eyebrow:    'Game Development',
-    title:      'Games developed',
+    title:      'Projects developed',
     body:       'Video game projects that combine design, programming, and 3D art to create unique playable experiences.',
     comingSoon: 'More games coming soon',
   },

@@ -22,7 +22,7 @@ export function buildSpine() {
     <nav class="mobile-nav" id="mobile-nav">
       <div class="mobile-nav-top">
         <div>
-          <div class="mobile-nav-logo">Portfolio 3D & VR</div>
+          <div class="mobile-nav-logo">Cristian A - Interactive Portfolio</div>
           <div class="mobile-nav-subtitle">Cristian A. Arenas</div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -54,7 +54,7 @@ export function buildSpine() {
     <!-- Spine desktop -->
     <aside class="spine">
       <div class="spine-logo">
-        <div class="title">Portfolio 3D & VR</div>
+        <div class="title">Cristian A - Interactive Portfolio</div>
         <div class="subtitle">${t.spine.subtitle}</div>
         <span class="ornament"></span>
       </div>
@@ -178,7 +178,7 @@ export function buildGamesPage() {
       <div class="page-number">— 04 —</div>
       <div class="page-header-line"></div>
       <div class="section-eyebrow">${t.games.eyebrow}</div>
-      <h2 class="section-title">${t.games.title.includes('desarrollados') ? 'Videojuegos <span>desarrollados</span>' : 'Games <span>developed</span>'}</h2>
+      <h2 class="section-title">${t.games.title.includes('desarrollados') ? 'Proyectos <span>desarrollados</span>' : 'Projects <span>developed</span>'}</h2>
       <p class="section-body">${t.games.body}</p>
       <div class="games-grid">
         ${games.map(g => `
