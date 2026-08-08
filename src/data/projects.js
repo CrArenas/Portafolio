@@ -156,6 +156,14 @@ export const games = [
     youtubeId: '1-JZBwsOv3s',
   },
 
+  {
+    id: 'maintenance-cnc3018-mr',
+    name: 'Maintenance - CNC 3018 MR',
+    desc: 'Aplicación de Realidad Mixta para Microsoft HoloLens 2, pensada para guiar a un técnico paso a paso durante el mantenimiento preventivo de una máquina CNC 3018. La app reconoce la máquina real mediante Vuforia Model Target, proyecta un holograma guía para ayudar a alinear el visor, resalta en color azul las piezas que hay que intervenir en cada paso (varillas roscadas, rodamientos lineales, motor NEMA17) y muestra paneles informativos al tocar cada componente.',
+    tags: ['Unity', 'C#', 'MR', 'HoloLens 2'],
+    youtubeId: 'z_svGxR57iQ',
+  },
+
   // ── Agrega tus juegos aquí abajo ──
   // {
   //   id: 'nombre-unico',
