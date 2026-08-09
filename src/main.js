@@ -2,7 +2,7 @@ import './styles/global.css';
 import { initBgScene } from './scenes/bgScene.js';
 import { initHeroScene } from './scenes/heroScene.js';
 import { initCardScene } from './scenes/cardScene.js';
-import { flipPage, animateSkillBars, fadeIn } from './components/pageFlip.js';
+import { flipPage, animateSkillBars, fadeIn, staggerReveal } from './components/pageFlip.js';
 import {
   buildSpine,
   buildHomePage,
@@ -16,6 +16,8 @@ import { projects, models3d, games } from './data/projects.js';
 import { es } from './data/i18n.js';
 import { getTranslations } from './data/translator.js';
 import { gsap } from 'gsap';
+import { animate, stagger, splitText } from 'animejs';
+import { prefersReducedMotion } from './utils/motion.js';
 
 // ── Detectar Safari móvil — DEBE IR ANTES DE USARSE ───────────────────────
 const isMobileSafari =
@@ -27,6 +29,25 @@ const isMobileSafari =
 // ── Estado de idioma ───────────────────────────────────────────────────────
 let currentLang = 'es';
 let enTexts = null;
+
+// ── Tracking de escenas Three.js vivas ─────────────────────────────────────
+// bgScene/heroScene/cardScene devuelven una función de cleanup (para el
+// paren renderer/RAF loop/listeners). Antes nunca se guardaba, así que cada
+// cambio de idioma (rebuildPages -> buildApp -> innerHTML nuevo) dejaba el
+// renderer y el requestAnimationFrame viejos corriendo para siempre en
+// segundo plano. Ahora se guardan y se llaman antes de reconstruir.
+let bgSceneCleanup = null;
+let heroSceneCleanup = null;
+const cardSceneCleanups = new Map(); // canvas -> cleanup fn
+
+function disposeAllScenes() {
+  bgSceneCleanup?.();
+  heroSceneCleanup?.();
+  bgSceneCleanup = null;
+  heroSceneCleanup = null;
+  cardSceneCleanups.forEach(cleanup => cleanup());
+  cardSceneCleanups.clear();
+}
 
 // ── Build DOM inicial en español ───────────────────────────────────────────
 function buildApp(texts) {
@@ -53,8 +74,8 @@ buildApp(es);
 const bgCanvas = document.getElementById('bg-canvas');
 bgCanvas.width  = bgCanvas.clientWidth;
 bgCanvas.height = bgCanvas.clientHeight;
-if (!isMobileSafari) initBgScene(bgCanvas);
-initHeroScene(document.getElementById('hero-canvas'));
+if (!isMobileSafari) bgSceneCleanup = initBgScene(bgCanvas);
+heroSceneCleanup = initHeroScene(document.getElementById('hero-canvas'));
 
 // ── Placeholder 2D para Safari móvil ──────────────────────────────────────
 function drawStaticPlaceholder(canvas, item) {
@@ -126,9 +147,11 @@ function drawCirclePlaceholder(ctx, w, h, item) {
 
 // ── Init card scenes ───────────────────────────────────────────────────────
 function initCardScenes() {
+  let anyNew = false;
   document.querySelectorAll('.card-canvas').forEach(canvas => {
     if (canvas.dataset.initialized) return;
     canvas.dataset.initialized = 'true';
+    anyNew = true;
 
     const projectId = canvas.dataset.projectId;
     const modelId   = canvas.dataset.modelId;
@@ -141,11 +164,63 @@ function initCardScenes() {
     if (isMobileSafari) {
       drawStaticPlaceholder(canvas, item);
     } else {
-      initCardScene(canvas, item);
+      // Guardamos el cleanup devuelto (dispose del renderer, RAF loop,
+      // ResizeObserver y animaciones de anime.js de esta tarjeta) para
+      // poder liberarlo en disposeAllScenes() cuando se reconstruya el DOM.
+      const cleanup = initCardScene(canvas, item);
+      cardSceneCleanups.set(canvas, cleanup);
     }
   });
+
+  // Entrada en cascada de las tarjetas recién creadas (proyectos/juegos)
+  if (anyNew) {
+    staggerReveal('#page-models .project-card');
+    staggerReveal('#page-games .game-card');
+  }
 }
 initCardScenes();
+
+// ── Entradas de texto con Anime.js (splitText chars + wrap: 'clip') ────────
+// Cada carácter queda envuelto en un span con overflow oculto (wrap: 'clip')
+// y se desliza desde abajo (100% -> 0%) hacia su posición final, tipo
+// marcador/scoreboard. Se usa tanto para el título del hero como para los
+// textos que cambian al alternar idioma.
+// Docs: https://animejs.com/documentation/text/splittext/textsplitter-settings/chars
+function revealText(el, { start = 0, by = 'chars', duration = 650 } = {}) {
+  if (prefersReducedMotion || !el) return null;
+  const splitSettings = by === 'chars' ? { chars: { wrap: 'clip' } } : { words: { wrap: 'clip' } };
+  const { chars, words } = splitText(el, splitSettings);
+  const targets = by === 'chars' ? chars : words;
+  return animate(targets, {
+    y: ['100%', '0%'],
+    duration,
+    ease: 'out(3)',
+    delay: stagger(by === 'chars' ? 22 : 45, { start }),
+  });
+}
+
+// Palabra dorada del título de la página activa.
+function animateHeroTitle(pageId) {
+  const span = document.querySelector(`#page-${pageId} .section-title span`);
+  revealText(span, { by: 'chars', start: 350 });
+}
+
+// Nav labels, botón de idioma y texto de la página activa (eyebrow + body).
+// Se usa al cambiar de idioma en vez del salto instantáneo de texto.
+function revealPageText(pageId) {
+  document.querySelectorAll('.nav-label, .lang-btn').forEach((el, i) =>
+    revealText(el, { by: 'chars', start: i * 20 })
+  );
+  document.querySelectorAll(`#page-${pageId} .section-eyebrow`).forEach((el, i) =>
+    revealText(el, { by: 'chars', start: 80 + i * 40 })
+  );
+  // El cuerpo puede tener varios párrafos (ej. "Acerca de mí" tiene 4).
+  // Se dividen por palabras (no por carácter) para que el stagger no se
+  // vuelva eterno, y cada párrafo arranca un poco después del anterior.
+  document.querySelectorAll(`#page-${pageId} .section-body`).forEach((el, i) =>
+    revealText(el, { by: 'words', start: 150 + i * 120 })
+  );
+}
 
 // ── Navegación ─────────────────────────────────────────────────────────────
 let currentPage = 'home';
@@ -169,6 +244,7 @@ function navigateTo(id) {
     if (id === 'about') setTimeout(animateSkillBars, 100);
     if (id === 'models' || id === 'games') setTimeout(initCardScenes, 100);
     fadeIn(inEl);
+    animateHeroTitle(id);
   });
 
   currentPage = id;
@@ -226,15 +302,17 @@ async function switchLanguage() {
 function rebuildPages(texts) {
   const savedPage = currentPage;
 
-  document.querySelectorAll('.card-canvas').forEach(c => {
-    c.dataset.initialized = '';
-  });
+  // Libera renderers, RAF loops, listeners y animaciones de anime.js de
+  // TODAS las escenas vivas (bg, hero, tarjetas) antes de tirar el DOM viejo.
+  // Esto es lo que arregla el memory leak: antes el innerHTML se
+  // reemplazaba sin detener nada de lo anterior.
+  disposeAllScenes();
 
   buildApp(texts);
   attachEvents();
 
-  if (!isMobileSafari) initBgScene(document.getElementById('bg-canvas'));
-  initHeroScene(document.getElementById('hero-canvas'));
+  if (!isMobileSafari) bgSceneCleanup = initBgScene(document.getElementById('bg-canvas'));
+  heroSceneCleanup = initHeroScene(document.getElementById('hero-canvas'));
 
   currentPage = 'home';
   if (savedPage !== 'home') {
@@ -250,6 +328,11 @@ function rebuildPages(texts) {
       if (savedPage === 'models' || savedPage === 'games') setTimeout(initCardScenes, 100);
     }
   }
+
+  // Revela el texto del idioma nuevo con el slide de caracteres (nav +
+  // labels + cuerpo) y el título de la página activa igual.
+  revealPageText(currentPage);
+  animateHeroTitle(currentPage);
 }
 
 function attachEvents() {
@@ -281,6 +364,9 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 // ── Animación de entrada ───────────────────────────────────────────────────
 gsap.fromTo('.spine', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
 gsap.fromTo('#page-home', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.3, ease: 'power3.out' });
+// La palabra dorada del título entra letra por letra (Anime.js) mientras
+// el resto del bloque hace fade/slide con GSAP.
+animateHeroTitle('home');
 
 // Pre-cargar traducciones
 getTranslations().then(texts => { enTexts = texts; });

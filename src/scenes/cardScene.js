@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { animate, utils } from 'animejs';
+import 'animejs/adapters/three'; // registra Object3D/Material como targets animables
+import { prefersReducedMotion } from '../utils/motion.js';
 
 export function initCardScene(canvas, project) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -45,6 +48,22 @@ export function initCardScene(canvas, project) {
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.rotation.x = Math.PI / 2;
   scene.add(ring);
+
+  // Guarda toda animación de Anime.js creada en esta escena para poder
+  // detenerla/limpiarla cuando la tarjeta se destruye (evita leaks).
+  const cardAnims = [];
+
+  // Pulso del anillo — antes era matemática manual dentro del tick(),
+  // ahora es una animación de Anime.js sobre el Object3D/Material real
+  // (adaptador de Three.js), con loop+alternate y control de reproducción.
+  if (!prefersReducedMotion) {
+    cardAnims.push(
+      animate(ring.material, { opacity: [0.3, 0.5], duration: 1600, ease: 'inOutSine', loop: true, alternate: true })
+    );
+    cardAnims.push(
+      animate(ring.scale, { x: 1.02, y: 1.02, z: 1.02, duration: 2000, ease: 'inOutSine', loop: true, alternate: true })
+    );
+  }
 
   const fallbackColor = new THREE.Color(project.color);
 
@@ -133,8 +152,25 @@ export function initCardScene(canvas, project) {
         // Ajustar cámara — distancia fija relativa al baseSize
         const camDist = (project.baseSize ?? 1.8) * 1.6;
         const camY = project.cameraY ?? 0;
-        camera.position.set(0, camY, Math.max(camDist, 2.5));
+        const finalZ = Math.max(camDist, 2.5);
         controls.target.set(0, 0, 0);
+
+        if (prefersReducedMotion) {
+          camera.position.set(0, camY, finalZ);
+        } else {
+          // Dolly-in: la cámara arranca más lejos/arriba y "vuela" hasta su
+          // posición final cuando el modelo termina de cargar (Three.js adapter).
+          camera.position.set(0, camY + finalZ * 0.35, finalZ * 1.8);
+          cardAnims.push(
+            animate(camera.position, {
+              y: camY,
+              z: finalZ,
+              duration: 1100,
+              ease: 'outExpo',
+              onUpdate: () => controls.update(),
+            })
+          );
+        }
         controls.update();
       },
       null,
@@ -156,18 +192,23 @@ export function initCardScene(canvas, project) {
   ro.observe(canvas.parentElement || canvas);
 
   let running = true;
-  const clock = new THREE.Clock();
 
   function tick() {
     if (!running) return;
     requestAnimationFrame(tick);
-    const t = clock.getElapsedTime();
-    ring.material.opacity = 0.3 + Math.sin(t * 2) * 0.2;
-    ring.scale.setScalar(1 + Math.sin(t * 1.5) * 0.02);
     controls.update();
     renderer.render(scene, camera);
   }
   tick();
 
-  return () => { running = false; ro.disconnect(); controls.dispose(); renderer.dispose(); };
+  return () => {
+    running = false;
+    ro.disconnect();
+    controls.dispose();
+    renderer.dispose();
+    // Detiene y libera cualquier animación de Anime.js aún corriendo
+    // (dolly-in de cámara, pulso del anillo) para no dejar tweens huérfanos.
+    cardAnims.forEach((a) => a.pause && a.pause());
+    utils.remove([camera.position, ring.material, ring.scale]);
+  };
 }

@@ -318,6 +318,7 @@ html, body {
 
 .section-title span {
   color: var(--gold);
+  display: inline-block;
 }
 
 .section-body {

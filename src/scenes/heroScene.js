@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { animate } from 'animejs';
+import 'animejs/adapters/three'; // registra Object3D como target animable (cámara)
+import { prefersReducedMotion } from '../utils/motion.js';
 
 export function initHeroScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -45,6 +48,7 @@ export function initHeroScene(canvas) {
       uColor1: { value: new THREE.Color('#C9A96E') },
       uColor2: { value: new THREE.Color('#4A90D9') },
       uColor3: { value: new THREE.Color('#ffffff') },
+      uOpacity: { value: prefersReducedMotion ? 1 : 0 },
     },
     vertexShader: `
       attribute float aRandom;
@@ -91,6 +95,7 @@ export function initHeroScene(canvas) {
       uniform vec3 uColor1;
       uniform vec3 uColor2;
       uniform vec3 uColor3;
+      uniform float uOpacity;
       varying float vAlpha;
       varying float vMix;
       varying float vGlow;
@@ -102,7 +107,7 @@ export function initHeroScene(canvas) {
         // Núcleo brillante
         float core  = smoothstep(0.5, 0.05, d);
         float halo  = smoothstep(0.5, 0.2, d) * 0.4;
-        float alpha = (core + halo) * vAlpha;
+        float alpha = (core + halo) * vAlpha * uOpacity;
 
         vec3 color = mix(uColor1, uColor2, vMix);
         // Cerca del mouse vira a blanco brillante
@@ -165,6 +170,19 @@ export function initHeroScene(canvas) {
   const ro = new ResizeObserver(resize);
   ro.observe(canvas.parentElement || canvas);
 
+  // ── Entrada: la cámara "vuela" hacia su posición final y el grid se
+  //    materializa con fade-in, en vez de aparecer todo de golpe ──────────
+  const heroAnims = [];
+  if (!prefersReducedMotion) {
+    camera.position.set(0, 0, 34);
+    heroAnims.push(
+      animate(camera.position, { z: 22, duration: 1400, ease: 'outExpo' })
+    );
+    heroAnims.push(
+      animate(mat.uniforms.uOpacity, { value: 1, duration: 1800, ease: 'outSine' })
+    );
+  }
+
   // ── Loop ────────────────────────────────────────────────────────────────
   let running = true;
   const clock = new THREE.Clock();
@@ -184,6 +202,7 @@ export function initHeroScene(canvas) {
     ro.disconnect();
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('touchmove', onTouchMove);
+    heroAnims.forEach((a) => a.pause && a.pause());
     renderer.dispose();
   };
 }
