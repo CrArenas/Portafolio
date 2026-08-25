@@ -231,6 +231,11 @@ export function buildContactPage() {
           <div class="contact-label">ArtStation</div>
           <div class="contact-value" style="color:var(--holo);">Portafolio Modelos 3D Hard Surface ↗</div>
         </a>
+        <a class="contact-item" href="https://github.com/CrArenas" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+          <div class="contact-icon">&lt;/&gt;</div>
+          <div class="contact-label">GitHub</div>
+          <div class="contact-value" style="color:var(--holo);">CrArenas ↗</div>
+        </a>
       </div>
     </section>
   `;
