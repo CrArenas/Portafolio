@@ -1,50 +1,30 @@
-export const projects = [
-  {
-    id: 'nexus-vr',
-    name: 'Nexus VR',
-    desc: 'Entorno de colaboración en realidad virtual para equipos distribuidos globalmente.',
-    tags: ['WebXR', 'Three.js', 'WebSockets'],
-    type: 'VR',
-    color: '#4A90D9',
-    geometry: 'torus',
-  },
-  {
-    id: 'void-arch',
-    name: 'Void Architecture',
-    desc: 'Visualizador arquitectónico 3D con recorridos inmersivos en tiempo real.',
-    tags: ['Three.js', 'GLSL', 'Blender'],
-    type: '3D',
-    color: '#C9A96E',
-    geometry: 'box',
-  },
-  {
-    id: 'echo-space',
-    name: 'Echo Space',
-    desc: 'Instalación de arte generativo que reacciona al sonido ambiente en VR.',
-    tags: ['WebAudio', 'WebXR', 'GSAP'],
-    type: 'VR',
-    color: '#9B59B6',
-    geometry: 'sphere',
-  },
-  {
-    id: 'terra-map',
-    name: 'Terra Map',
-    desc: 'Globo terráqueo interactivo con datos geoespaciales en tiempo real.',
-    tags: ['Three.js', 'D3.js', 'WebGL'],
-    type: '3D',
-    color: '#2ECC71',
-    geometry: 'sphere',
-  },
-];
+// ── Textos bilingües ────────────────────────────────────────────────────────
+// Cualquier texto puede ser un string simple (igual en ambos idiomas) o un
+// objeto { es, en }. Usa loc(valor, idioma) para obtener el texto correcto.
+export function loc(value, lang = 'es') {
+  if (value == null || typeof value === 'string') return value;
+  return value[lang] ?? value.es;
+}
 
-export const skills = [
-  { name: 'Modelado 3D — Blender & ZBrush', pct: 85 },
-  { name: 'Desarrollo de videojuegos — Unity', pct: 70 },
-  { name: 'Diseño gráfico — Photoshop & Illustrator', pct: 80 },
-  { name: 'Desarrollo web — Laravel & PHP', pct: 75 },
-  { name: 'Programación — Python & Java', pct: 72 },
-  { name: 'Diseño de páginas web', pct: 78 },
-  { name: 'Manejo de herramientas de inteligencia artificial', pct: 75 },
+// ── HABILIDADES ─────────────────────────────────────────────────────────────
+// Agrupadas por área. Se muestran como etiquetas (sin porcentajes).
+export const skillGroups = [
+  {
+    title: { es: 'Arte 3D & diseño', en: '3D art & design' },
+    items: ['Blender', 'ZBrush', 'Hard-Surface', { es: 'Impresión 3D', en: '3D printing' }, 'Photoshop', 'Illustrator'],
+  },
+  {
+    title: { es: 'Videojuegos & XR', en: 'Games & XR' },
+    items: ['Unity', 'C#', { es: 'Realidad virtual', en: 'Virtual reality' }, { es: 'Realidad mixta', en: 'Mixed reality' }, 'HoloLens 2', 'Vuforia'],
+  },
+  {
+    title: { es: 'Desarrollo de software', en: 'Software development' },
+    items: ['Laravel', 'PHP', 'React', 'React Native', 'Python', 'Java'],
+  },
+  {
+    title: { es: 'Otros', en: 'Other' },
+    items: [{ es: 'Diseño UI / web', en: 'UI / web design' }, { es: 'Herramientas de IA', en: 'AI tools' }],
+  },
 ];
 
 // ── MODELOS 3D ──────────────────────────────────────────────────────────────
@@ -57,18 +37,21 @@ export const models3d = [
   {
     id: 'Razor',
     name: 'Razor Crest',
-    desc: 'Nave Razor Crest de Star Wars',
+    desc: {
+      es: 'Fan art de la nave Razor Crest de Star Wars, modelada en hard-surface y preparada para impresión 3D.',
+      en: 'Fan art of the Razor Crest ship from Star Wars, hard-surface modeled and prepared for 3D printing.',
+    },
     image: '/images/razor-crest.png',  // ← screenshot del modelo
-    tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D'],
+    tags: ['Blender', 'Cel Shading', 'Hard-Surface', { es: 'Impresión 3D', en: '3D printing' }],
     file: 'Razor_Crest_opt.glb',
     basePath: '/models/',
     color: '#5DDDD8',
     geometry: 'sphere',
-    scale: 1.0,
+    scale: 0.85,
     baseSize: 6.0,
     scaleAxis: 'y',
     cameraY: 0.5,
-    platformScale: 0.7,  // ← tamaño de la plataforma (default 1.0)
+    platformScale: 0.8,  // ← tamaño de la plataforma (default 1.0)
     colorMap: {
       'Azul claro':  { color: 0x8f8b8b, roughness: 0.75, emissive: null },
       'Gris oscuro': { color: 0x292d33, roughness: 0.80, emissive: null },
@@ -78,10 +61,13 @@ export const models3d = [
 
   {
     id: 'Droid_B1',
-    name: 'Droide de batalla B1 + Arma',
-    desc: 'Droide de batalla B1 de Star Wars',
+    name: { es: 'Droide de batalla B1', en: 'B1 Battle Droid' },
+    desc: {
+      es: 'Droide de batalla B1 de Star Wars con su arma, modelado como personaje listo para impresión 3D.',
+      en: 'B1 battle droid from Star Wars with its blaster, modeled as a character ready for 3D printing.',
+    },
     image: '/images/droide-b1.png',  // ← screenshot del modelo
-    tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Personaje'],
+    tags: ['Blender', 'Cel Shading', 'Hard-Surface', { es: 'Impresión 3D', en: '3D printing' }, { es: 'Personaje', en: 'Character' }],
     file: 'Droide_B1_opt.glb',
     basePath: '/models/',
     color: '#5DDDD8',
@@ -100,10 +86,13 @@ export const models3d = [
   },
   {
     id: 'Robot_AT-TE',
-    name: 'Robot AT-TE',
-    desc: 'Robot AT-TE de Star Wars',
+    name: 'AT-TE',
+    desc: {
+      es: 'Caminante AT-TE de Star Wars, con piezas mecánicas detalladas en hard-surface para impresión 3D.',
+      en: 'AT-TE walker from Star Wars, with detailed hard-surface mechanical parts for 3D printing.',
+    },
     image: '/images/robot-atte.png',  // ← screenshot del modelo
-    tags: ['Blender', 'Cell Shading', 'Hard-Surface', 'Impresión 3D', 'Robot'],
+    tags: ['Blender', 'Cel Shading', 'Hard-Surface', { es: 'Impresión 3D', en: '3D printing' }, { es: 'Vehículo', en: 'Vehicle' }],
     file: 'Robot_ATTE_opt.glb',
     basePath: '/models/',
     color: '#5DDDD8',
@@ -124,8 +113,8 @@ export const models3d = [
   // {
   //   id: 'nombre-unico',
   //   name: 'Nombre del modelo',
-  //   desc: 'Descripción corta del modelo.',
-  //   tags: ['Blender', 'Impresión 3D'],
+  //   desc: { es: 'Descripción corta.', en: 'Short description.' },
+  //   tags: ['Blender', { es: 'Impresión 3D', en: '3D printing' }],
   //   file: 'mi-modelo.glb',
   //   basePath: '/models/',
   //   color: '#C9A96E',
@@ -134,41 +123,53 @@ export const models3d = [
   // },
 ];
 
-// ── VIDEOJUEGOS ─────────────────────────────────────────────────────────────
-// Para agregar un juego nuevo:
+// ── PROYECTOS (VIDEOJUEGOS / XR) ────────────────────────────────────────────
+// Para agregar un proyecto nuevo:
 // 1. Sube el gameplay a YouTube como "No listado"
 // 2. Copia el ID del video (lo que va después de ?v= en la URL)
 // 3. Agrega un bloque nuevo aquí
 // ────────────────────────────────────────────────────────────────────────────
 export const games = [
   {
-    id: 'slenderman-vr',
-    name: 'Slenderman - VR',
-    desc: 'Un videojuego de realidad virtual inspirado en el clásico creepypasta de Slenderman y basado en el videojuego original Slender: The Eight Pages. El proyecto fue desarrollado en Unity, combinando contenido propio con diversos recursos y assets provenientes de la Unity Asset Store.',
-    tags: ['Unity', 'C#', 'VR'],
-    youtubeId: 'MYUGQbxZZvo',
+    id: 'maintenance-cnc3018-mr',
+    name: 'Maintenance — CNC 3018 MR',
+    type: { es: 'Realidad mixta', en: 'Mixed reality' },
+    desc: {
+      es: 'Aplicación de realidad mixta para Microsoft HoloLens 2 que guía a un técnico paso a paso durante el mantenimiento preventivo de una máquina CNC 3018. Reconoce la máquina real con Vuforia Model Target, proyecta un holograma guía para alinear el visor, resalta en azul las piezas a intervenir en cada paso (varillas roscadas, rodamientos lineales, motor NEMA 17) y muestra paneles informativos al tocar cada componente.',
+      en: 'Mixed reality application for Microsoft HoloLens 2 that guides a technician step by step through the preventive maintenance of a CNC 3018 machine. It recognizes the real machine with Vuforia Model Target, projects a guide hologram to align the headset, highlights in blue the parts to service at each step (threaded rods, linear bearings, NEMA 17 motor) and shows information panels when each component is tapped.',
+    },
+    tags: ['Unity', 'C#', 'HoloLens 2', 'Vuforia'],
+    youtubeId: 'z_svGxR57iQ',
   },
   {
     id: 'quiz-interactivo-vr',
-    name: 'Quiz Interactivo - VR',
-    desc: 'Un videojuego de realidad virtual con formato de cuestionario interactivo, en el que los jugadores responden preguntas a través de una variedad de minijuegos. Desarrollado en Unity, el proyecto combina mecánicas educativas con una experiencia inmersiva en realidad virtual para ofrecer una forma dinámica y entretenida de aprender. Fue desarrollado utilizando una combinación de contenido propio y diversos recursos de la Unity Asset Store.',
+    name: { es: 'Quiz Interactivo — VR', en: 'Interactive Quiz — VR' },
+    type: { es: 'Realidad virtual', en: 'Virtual reality' },
+    desc: {
+      es: 'Videojuego de realidad virtual con formato de cuestionario, en el que los jugadores responden preguntas a través de distintos minijuegos. Combina mecánicas educativas con una experiencia inmersiva para aprender de forma dinámica y entretenida. Desarrollado en Unity con contenido propio y recursos de la Unity Asset Store.',
+      en: 'Virtual reality quiz game in which players answer questions through a variety of minigames. It combines educational mechanics with an immersive experience to make learning dynamic and fun. Built in Unity with original content and assets from the Unity Asset Store.',
+    },
     tags: ['Unity', 'C#', 'VR'],
     youtubeId: '1-JZBwsOv3s',
   },
-
   {
-    id: 'maintenance-cnc3018-mr',
-    name: 'Maintenance - CNC 3018 MR',
-    desc: 'Aplicación de Realidad Mixta para Microsoft HoloLens 2, pensada para guiar a un técnico paso a paso durante el mantenimiento preventivo de una máquina CNC 3018. La app reconoce la máquina real mediante Vuforia Model Target, proyecta un holograma guía para ayudar a alinear el visor, resalta en color azul las piezas que hay que intervenir en cada paso (varillas roscadas, rodamientos lineales, motor NEMA17) y muestra paneles informativos al tocar cada componente.',
-    tags: ['Unity', 'C#', 'MR', 'HoloLens 2'],
-    youtubeId: 'z_svGxR57iQ',
+    id: 'slenderman-vr',
+    name: 'Slenderman — VR',
+    type: { es: 'Realidad virtual', en: 'Virtual reality' },
+    desc: {
+      es: 'Videojuego de terror en realidad virtual inspirado en el creepypasta de Slenderman y en el juego original Slender: The Eight Pages. Desarrollado en Unity, combinando contenido propio con recursos de la Unity Asset Store.',
+      en: 'Virtual reality horror game inspired by the Slenderman creepypasta and the original game Slender: The Eight Pages. Built in Unity, combining original content with assets from the Unity Asset Store.',
+    },
+    tags: ['Unity', 'C#', 'VR'],
+    youtubeId: 'MYUGQbxZZvo',
   },
 
-  // ── Agrega tus juegos aquí abajo ──
+  // ── Agrega tus proyectos aquí abajo ──
   // {
   //   id: 'nombre-unico',
-  //   name: 'Nombre del juego',
-  //   desc: 'Descripción corta.',
+  //   name: 'Nombre del proyecto',
+  //   type: { es: 'Realidad virtual', en: 'Virtual reality' },
+  //   desc: { es: 'Descripción corta.', en: 'Short description.' },
   //   tags: ['Unity', 'C#'],
   //   youtubeId: 'ID_DEL_VIDEO',
   // },

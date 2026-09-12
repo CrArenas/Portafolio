@@ -6,6 +6,10 @@ import { animate, utils } from 'animejs';
 import 'animejs/adapters/three'; // registra Object3D/Material como targets animables
 import { prefersReducedMotion } from '../utils/motion.js';
 
+// Guarda en memoria los .glb descargados: las tarjetas se recrean cada vez
+// que se entra a la página de modelos y así no se vuelven a descargar.
+THREE.Cache.enabled = true;
+
 export function initCardScene(canvas, project) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -91,6 +95,8 @@ export function initCardScene(canvas, project) {
     loader.load(
       `${basePath}${project.file}`,
       (gltf) => {
+        // La tarjeta pudo destruirse mientras el modelo cargaba
+        if (!running) return;
         const model = gltf.scene;
 
         // Centrar y escalar
@@ -192,10 +198,13 @@ export function initCardScene(canvas, project) {
   ro.observe(canvas.parentElement || canvas);
 
   let running = true;
+  const page = canvas.closest('.page');
 
   function tick() {
     if (!running) return;
     requestAnimationFrame(tick);
+    // No renderizar mientras la página de modelos está oculta
+    if (page && !page.classList.contains('active')) return;
     controls.update();
     renderer.render(scene, camera);
   }
@@ -206,6 +215,7 @@ export function initCardScene(canvas, project) {
     ro.disconnect();
     controls.dispose();
     renderer.dispose();
+    renderer.forceContextLoss(); // libera el contexto WebGL de verdad
     // Detiene y libera cualquier animación de Anime.js aún corriendo
     // (dolly-in de cámara, pulso del anillo) para no dejar tweens huérfanos.
     cardAnims.forEach((a) => a.pause && a.pause());

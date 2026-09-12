@@ -1,11 +1,20 @@
 import { gsap } from 'gsap';
 import { animate, stagger, utils } from 'animejs';
-import { dur, prefersReducedMotion } from '../utils/motion.js';
+import { prefersReducedMotion } from '../utils/motion.js';
 
 let isFlipping = false;
 
+// Devuelve false si ya había un flip en curso (y no se hizo nada).
 export function flipPage(outEl, inEl, direction = 1, onMid) {
-  if (isFlipping) return;
+  if (isFlipping) return false;
+
+  if (prefersReducedMotion) {
+    outEl.classList.remove('active');
+    if (onMid) onMid();
+    inEl.classList.add('active');
+    return true;
+  }
+
   isFlipping = true;
 
   const tl = gsap.timeline({
@@ -35,26 +44,16 @@ export function flipPage(outEl, inEl, direction = 1, onMid) {
     duration: 0.4,
     ease: 'power2.out',
   });
+
+  return true;
 }
 
 export function fadeIn(el) {
+  if (prefersReducedMotion) return;
   gsap.fromTo(el, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
 }
 
-export function animateSkillBars() {
-  // Antes: todas las barras arrancaban con el mismo delay fijo (0.1s).
-  // Ahora entran en cascada real con stagger() de Anime.js.
-  const bars = document.querySelectorAll('.skill-fill');
-  utils.remove(bars); // por si se llama de nuevo (cambio de idioma/página)
-  animate(bars, {
-    width: (bar) => bar.dataset.pct + '%',
-    duration: dur(1100),
-    ease: 'outExpo',
-    delay: stagger(dur(80), { start: 100 }),
-  });
-}
-
-// Entrada en cascada para grillas de tarjetas (proyectos, juegos, etc).
+// Entrada en cascada para grillas de tarjetas (modelos, proyectos, etc).
 // Se le pasa un selector o NodeList de los elementos ya presentes en el DOM.
 export function staggerReveal(target, { delay = 0 } = {}) {
   const els = typeof target === 'string' ? document.querySelectorAll(target) : target;

@@ -236,6 +236,7 @@ export function initBgScene(canvas) {
     gridMat.dispose();
 
     renderer.dispose();
+    renderer.forceContextLoss(); // libera el contexto WebGL de verdad
 
   };
 
