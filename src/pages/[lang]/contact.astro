@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { ui, langPaths } from '../../data/i18n.js';
+import { LINKS } from '../../data/links.js';
+
+export const getStaticPaths = langPaths;
+
+const { lang } = Astro.params;
+const t = ui[lang];
+const items = [
+  { key: 'linkedin',   label: 'LinkedIn',   value: t.contact.linkedinValue },
+  { key: 'artstation', label: 'ArtStation', value: t.contact.artstationValue },
+  { key: 'github',     label: 'GitHub',     value: t.contact.githubValue },
+];
+---
+<BaseLayout lang={lang} current="contact">
+  <div class="section-eyebrow">{t.contact.eyebrow}</div>
+  <h1 class="section-title" set:html={t.contact.title} />
+  <p class="section-body">{t.contact.body}</p>
+  <div class="contact-grid">
+    {items.map(c => (
+      <a class="contact-item" href={LINKS[c.key]} target="_blank" rel="noopener noreferrer">
+        <div class="contact-icon"><Icon name={c.key} /></div>
+        <div class="contact-label">{c.label}</div>
+        <div class="contact-value">{c.value} <span class="contact-arrow" aria-hidden="true">↗</span></div>
+      </a>
+    ))}
+  </div>
+</BaseLayout>

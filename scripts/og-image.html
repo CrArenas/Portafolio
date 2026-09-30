@@ -1,0 +1,53 @@
+<!--
+  Fuente de public/og.png (imagen de vista previa al compartir, 1200×630).
+  Para regenerarla: abre este archivo en Chrome, DevTools → modo dispositivo
+  a 1200×630 → menú ⋮ → "Capture screenshot", y guarda como public/og.png.
+-->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    background: radial-gradient(ellipse at 75% 40%, #1f2445 0%, #12121E 55%, #0D0D14 100%);
+    color: #E8E0D0; font-family: 'JetBrains Mono', monospace;
+    position: relative;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(74,144,217,0.55) 1.4px, transparent 1.6px),
+                      radial-gradient(circle, rgba(201,169,110,0.45) 1.2px, transparent 1.4px);
+    background-size: 28px 28px, 56px 56px;
+    background-position: 0 0, 14px 14px;
+    mask-image: linear-gradient(100deg, transparent 38%, black 80%);
+  }
+  .frame { position: absolute; inset: 28px; border: 1px solid rgba(201,169,110,0.22); }
+  .content { position: absolute; left: 84px; top: 128px; right: 84px; }
+  .eyebrow { font-size: 18px; letter-spacing: 0.32em; color: #6FA8E6; text-transform: uppercase; }
+  h1 { font-family: 'Cinzel', serif; font-weight: 700; font-size: 92px; line-height: 1.05; letter-spacing: 0.04em; color: #C9A96E; margin-top: 26px; }
+  .line { width: 360px; height: 2px; margin: 34px 0 30px; background: linear-gradient(to right, #C9A96E, transparent); }
+  .role { font-size: 26px; letter-spacing: 0.08em; color: #E8E0D0; }
+  .role span { color: #C9A96E; }
+  .tags { display: flex; gap: 12px; margin-top: 30px; }
+  .tag { font-size: 16px; padding: 7px 14px; color: #C9A96E; border: 1px solid rgba(201,169,110,0.4); background: rgba(201,169,110,0.06); }
+  .url { position: absolute; right: 84px; bottom: 64px; font-size: 17px; letter-spacing: 0.14em; color: #a89f8f; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="frame"></div>
+  <div class="content">
+    <div class="eyebrow">Portfolio · Portafolio</div>
+    <h1>Cristian<br>Arenas</h1>
+    <div class="line"></div>
+    <div class="role">Software Developer <span>·</span> 3D &amp; XR</div>
+    <div class="tags">
+      <span class="tag">Laravel</span><span class="tag">React</span><span class="tag">React Native</span><span class="tag">Unity</span><span class="tag">Three.js</span>
+    </div>
+  </div>
+  <div class="url">portfolio-3d-ca.vercel.app</div>
+</body>
+</html>

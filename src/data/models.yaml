@@ -1,0 +1,67 @@
+# ── MODELOS 3D ──────────────────────────────────────────────────────────────
+# Para agregar un modelo nuevo:
+# 1. Optimiza el .glb y déjalo en public/models/:
+#      npm run optimize:model -- modelo.glb public/models/modelo.glb
+# 2. Agrega un bloque aquí; `order` define su posición en la página
+# Campos: ver la colección "models" en src/content.config.js
+#   scale:          >1 más grande, <1 más pequeño (por defecto 1)
+#   platformScale:  tamaño de la plataforma (por defecto 1)
+#   colorMap:       color por nombre de material del .glb
+
+- id: razor-crest
+  order: 1
+  name: Razor Crest
+  desc:
+    es: Fan art de la nave Razor Crest de Star Wars, modelada en hard-surface y preparada para impresión 3D.
+    en: Fan art of the Razor Crest ship from Star Wars, hard-surface modeled and prepared for 3D printing.
+  image: /images/razor-crest.png
+  tags: [Blender, Cel Shading, Hard-Surface, { es: Impresión 3D, en: 3D printing }]
+  file: /models/Razor_Crest_opt.glb
+  scale: 0.85
+  baseSize: 6.0
+  scaleAxis: y
+  cameraY: 0.5
+  platformScale: 0.8
+  colorMap:
+    Azul claro:  { color: '#8f8b8b', roughness: 0.75 }
+    Gris oscuro: { color: '#292d33', roughness: 0.80 }
+    Emision:     { color: '#111111', roughness: 0.40, emissive: '#111111' }
+
+- id: droide-b1
+  order: 2
+  name: { es: Droide de batalla B1, en: B1 Battle Droid }
+  desc:
+    es: Droide de batalla B1 de Star Wars con su arma, modelado como personaje listo para impresión 3D.
+    en: B1 battle droid from Star Wars with its blaster, modeled as a character ready for 3D printing.
+  image: /images/droide-b1.png
+  tags: [Blender, Cel Shading, Hard-Surface, { es: Impresión 3D, en: 3D printing }, { es: Personaje, en: Character }]
+  file: /models/Droide_B1_opt.glb
+  scale: 1.3
+  baseSize: 6.0
+  scaleAxis: y
+  cameraY: 0.5
+  platformScale: 0.9
+  colorMap:
+    Azul claro:     { color: '#a9a862', roughness: 0.75 }
+    Azul claro.001: { color: '#a9a862', roughness: 0.75 }
+    Azul oscuroo:   { color: '#434a52', roughness: 0.80 }
+    Emision:        { color: '#111111', roughness: 0.40, emissive: '#111111' }
+
+- id: at-te
+  order: 3
+  name: AT-TE
+  desc:
+    es: Caminante AT-TE de Star Wars, con piezas mecánicas detalladas en hard-surface para impresión 3D.
+    en: AT-TE walker from Star Wars, with detailed hard-surface mechanical parts for 3D printing.
+  image: /images/robot-atte.png
+  tags: [Blender, Cel Shading, Hard-Surface, { es: Impresión 3D, en: 3D printing }, { es: Vehículo, en: Vehicle }]
+  file: /models/Robot_ATTE_opt.glb
+  scale: 0.6
+  baseSize: 6.0
+  scaleAxis: y
+  cameraY: 0.5
+  platformScale: 0.8
+  colorMap:
+    Azul claro:   { color: '#908d8c', roughness: 0.75 }
+    Azul oscuroo: { color: '#464544', roughness: 0.80 }
+    Emision:      { color: '#111111', roughness: 0.40, emissive: '#111111' }

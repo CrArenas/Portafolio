@@ -1,0 +1,19 @@
+---
+import { pageNum } from '../data/routes.js';
+
+const { current } = Astro.props;
+---
+<div class="page-number">— {pageNum(current)} —</div>
+<!-- SVG para que Anime.js pueda dibujar la línea (ver scripts/motion.js).
+     Sin viewBox y con x2="100%": la línea mide siempre el ancho real, sin
+     escalado no uniforme que deforme el trazo al dibujarse. -->
+<svg class="page-header-line" aria-hidden="true">
+  <defs>
+    <!-- userSpaceOnUse: con objectBoundingBox el degradado no se pinta en una línea horizontal (alto 0) -->
+    <linearGradient id="header-line-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100%" y2="0">
+      <stop offset="0" style="stop-color: var(--gold-dim)" />
+      <stop offset="1" style="stop-color: var(--gold-dim); stop-opacity: 0" />
+    </linearGradient>
+  </defs>
+  <line x1="0" y1="1" x2="100%" y2="1" stroke="url(#header-line-gradient)" stroke-width="1" />
+</svg>

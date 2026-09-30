@@ -1,0 +1,81 @@
+---
+import { getOrdered } from '../../utils/content.js';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { ui, langPaths, loc } from '../../data/i18n.js';
+import { LINKS } from '../../data/links.js';
+
+export const getStaticPaths = langPaths;
+
+const { lang } = Astro.params;
+const t = ui[lang];
+const L = (value) => loc(value, lang);
+const [models, projects] = await Promise.all([getOrdered('models'), getOrdered('xr')]);
+---
+<BaseLayout lang={lang} current="xr">
+  <div class="section-eyebrow">{t.xr.eyebrow}</div>
+  <h1 class="section-title" set:html={t.xr.title} />
+  <p class="section-body">{t.xr.body}</p>
+
+  <section class="xr-section" id="xr-projects" aria-labelledby="xr-projects-title">
+    <h2 class="block-label" id="xr-projects-title">{t.xr.projectsLabel}</h2>
+    <div class="games-grid">
+      {projects.map(({ data: g }, i) => (
+        <article class="game-card">
+          {/* El iframe de YouTube solo se carga al hacer clic (ver scripts/app.js) */}
+          <div class="game-video-wrap">
+            <button class="video-poster" type="button" data-yt={g.youtubeId} data-title={L(g.name)} aria-label={`${t.xr.play}: ${L(g.name)}`}>
+              <img src={`https://i.ytimg.com/vi/${g.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" />
+              <span class="video-play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5.14v13.72L19 12z" /></svg>
+              </span>
+            </button>
+          </div>
+          <div class="project-info">
+            <div class="game-meta">
+              <span class="game-index">{String(i + 1).padStart(2, '0')}</span>
+              <span class="game-type">{L(g.type)}</span>
+            </div>
+            <h3 class="project-name">{L(g.name)}</h3>
+            <p class="project-desc">{L(g.desc)}</p>
+            <div class="project-tags">{g.tags.map(tag => <span class="tag">{L(tag)}</span>)}</div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="xr-section" id="models" aria-labelledby="models-title">
+    <h2 class="block-label" id="models-title">{t.xr.modelsLabel}</h2>
+    <p class="section-body">{t.xr.modelsHint}</p>
+    <div class="projects-grid">
+      {models.map(({ data: m }) => (
+        <article class="project-card">
+          <div class="project-thumb">
+            {/* La escena lee su configuración de data-model (ver scripts/app.js) */}
+            <canvas class="card-canvas" data-model={JSON.stringify({ ...m, name: L(m.name) })} aria-label={L(m.name)}></canvas>
+            <div class="thumb-loading" aria-hidden="true">
+              <span class="thumb-loading-label">{t.xr.loading}</span>
+              <span class="thumb-loading-bar"><span></span></span>
+            </div>
+            <span class="thumb-hint" aria-hidden="true">↻ {t.xr.dragHint}</span>
+          </div>
+          <div class="project-info">
+            <h3 class="project-name">{L(m.name)}</h3>
+            <p class="project-desc">{L(m.desc)}</p>
+            <div class="project-tags">{m.tags.map(tag => <span class="tag">{L(tag)}</span>)}</div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <a href={LINKS.artstation} target="_blank" rel="noopener noreferrer" class="artstation-card">
+      <div class="artstation-card-content">
+        <div class="artstation-eyebrow">{t.xr.artStationLabel}</div>
+        <div class="artstation-name">ArtStation <span>— Cristian A.</span></div>
+        <div class="artstation-url">artstation.com/carenas ↗</div>
+      </div>
+      <div class="artstation-icon"><Icon name="artstation" /></div>
+    </a>
+  </section>
+</BaseLayout>

@@ -1,0 +1,151 @@
+---
+title: Cinco escenas WebGL en un portafolio sin que el navegador las mate
+summary: Cómo resolví la pérdida de contextos WebGL de mi portafolio con Three.js y Astro, y cómo bajé los modelos 3D de 14,6 MB a 1,8 MB sin que se note la diferencia.
+date: 2026-09-30
+stack: [Astro, Three.js, WebGL, Anime.js, glTF]
+role: Diseño y desarrollo
+featured: true
+---
+
+## El problema
+
+Mi portafolio tiene varias escenas 3D: partículas de fondo, una malla
+interactiva en la página de inicio y un visor por cada modelo 3D. Cada una usa
+su propio `WebGLRenderer`, y cada renderer abre un **contexto WebGL**.
+
+Los navegadores limitan cuántos contextos pueden estar vivos a la vez (en
+móviles y GPUs modestas son pocos). Cuando se supera el límite, el navegador no
+avisa: **mata el contexto más antiguo** y ese canvas queda en blanco para
+siempre. En mi caso, la víctima era la malla de inicio. Bastaba con visitar la
+página de modelos y volver para encontrarla vacía.
+
+A eso se sumaba el peso: los tres modelos pesaban **14,6 MB**, y solo el droide
+tenía 8 millones de vértices. Estaban pensados para impresión 3D, no para la web.
+
+## Mi rol
+
+Proyecto personal: diseño, desarrollo y modelado 3D.
+
+## Arquitectura
+
+El sitio está hecho con **Astro**: cada sección es HTML estático por idioma
+(`/es/…`, `/en/…`) y la navegación entre páginas usa View Transitions, así que
+no hay recarga completa. Three.js dibuja las escenas y Anime.js anima las
+entradas y la cámara.
+
+La regla que resolvió el problema es simple: **una escena solo existe mientras
+se ve**.
+
+## Retos técnicos
+
+### 1. `dispose()` no libera el contexto
+
+Lo primero que probé fue destruir las escenas al salir de cada página con
+`renderer.dispose()`. No bastó: `dispose()` libera geometrías y buffers, pero el
+contexto sigue vivo hasta que el recolector de basura decida. La clave fue
+forzarlo:
+
+```js
+return () => {
+  running = false;          // detiene el requestAnimationFrame
+  disposeObject(scene);     // geometrías, materiales y texturas
+  renderer.dispose();
+  renderer.forceContextLoss(); // libera el contexto WebGL de verdad
+};
+```
+
+### 2. Recuperarse si aun así se pierde
+
+Aunque se liberen bien, un contexto se puede perder por otras razones (la GPU se
+reinicia, el sistema recupera memoria). Por eso cada escena se monta con un
+envoltorio que escucha `webglcontextlost` y la vuelve a crear en un canvas
+nuevo, porque un canvas cuyo contexto se perdió no se puede reutilizar:
+
+```js
+function mountScene(initialCanvas, init, { retries = 3 } = {}) {
+  let canvas = initialCanvas;
+  let cleanup = null;
+  let attempts = 0;
+
+  const onLost = (e) => {
+    e.preventDefault();
+    if (attempts++ >= retries) return;
+    setTimeout(start, 500);
+  };
+
+  function start() {
+    canvas.removeEventListener('webglcontextlost', onLost);
+    cleanup?.();
+    const fresh = canvas.cloneNode(false);
+    canvas.replaceWith(fresh);
+    canvas = fresh;
+    canvas.addEventListener('webglcontextlost', onLost);
+    cleanup = init(canvas);
+  }
+
+  start();
+  return () => cleanup?.();
+}
+```
+
+### 3. Encajarlo con las View Transitions de Astro
+
+Con el enrutador del cliente de Astro, los scripts se ejecutan una sola vez y el
+DOM se reemplaza en cada navegación. El ciclo de vida queda en dos eventos:
+
+```js
+document.addEventListener('astro:page-load', startPageScenes); // también en la carga inicial
+document.addEventListener('astro:before-swap', stopPageScenes); // antes de cambiar de página
+```
+
+Las partículas de fondo son la excepción: viven en un contenedor con
+`transition:persist`, así que se crean una vez y sobreviven a la navegación.
+
+Los visores de modelos, además, se crean **solo cuando su tarjeta entra en
+pantalla** con un `IntersectionObserver`. Si nadie hace scroll hasta ellos, no
+se descargan ni abren contexto.
+
+### 4. De 14,6 MB a 1,8 MB
+
+Simplificar los modelos con [meshoptimizer](https://github.com/zeux/meshoptimizer)
+al principio no funcionó: el droide apenas bajaba de 8 a 5,3 millones de
+vértices. La causa estaba en los atributos. Cada vértice tenía coordenadas UV y
+normales de aristas duras distintas, así que la malla estaba partida en miles de
+pedazos y el simplificador no podía tocar sus bordes.
+
+Estos modelos no tienen texturas, así que las UV sobraban. Y la especificación
+glTF dice que una malla sin normales se dibuja con **sombreado plano**, justo el
+aspecto que busca un modelo hard-surface. Al quitar ambos atributos, fusionar
+vértices y simplificar, el resultado cambió por completo:
+
+| Modelo      | Antes  | Después | Vértices          |
+| ----------- | ------ | ------- | ----------------- |
+| Droide B1   | 9,8 MB | 672 KB  | 8,0 M → 188 k     |
+| Razor Crest | 3,6 MB | 808 KB  | 2,2 M → 258 k     |
+| AT-TE       | 1,3 MB | 312 KB  | 666 k → 79 k      |
+
+En el camino apareció una trampa: el paso `dedup()` de glTF-Transform fusionó
+materiales con propiedades idénticas, y con ellos desaparecieron los **nombres**
+que uso para colorear cada pieza. La nave salió de un solo color. La solución
+fue excluir los materiales de la deduplicación.
+
+Comparé cada modelo antes y después desde el mismo ángulo (con
+`prefers-reduced-motion` para congelar la cámara). La Razor Crest necesitó más
+detalle que los demás: con la primera configuración se le rompía la nariz.
+
+## Resultado
+
+- La malla de inicio ya no desaparece, navegues como navegues.
+- Los modelos pesan **un 88 % menos** y se ven igual.
+- Salir de una página libera toda su memoria de GPU.
+- El proceso de optimización quedó como un script (`npm run optimize:model`)
+  para los próximos modelos.
+
+## Aprendizajes
+
+- **Liberar recursos en WebGL es explícito.** Si una escena puede desaparecer,
+  su función de limpieza es tan importante como la de creación.
+- **Un modelo para imprimir no es un modelo para la web.** La resolución que
+  necesita una impresora 3D no se ve en una tarjeta de 300 píxeles.
+- **Verificar con capturas, no con números.** El número de vértices decía que
+  la primera versión de la nave estaba bien; la captura decía que no.

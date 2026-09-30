@@ -1,0 +1,36 @@
+# ── PROYECTOS (VIDEOJUEGOS / XR) ────────────────────────────────────────────
+# Para agregar un proyecto nuevo:
+# 1. Sube el gameplay a YouTube como "No listado"
+# 2. Copia el ID del video (lo que va después de ?v= en la URL)
+# 3. Agrega un bloque aquí; `order` define su posición en la página
+# Campos: ver la colección "xr" en src/content.config.js
+
+- id: maintenance-cnc3018-mr
+  order: 1
+  name: Maintenance — CNC 3018 MR
+  type: { es: Realidad mixta, en: Mixed reality }
+  desc:
+    es: Aplicación de realidad mixta para Microsoft HoloLens 2 que guía a un técnico paso a paso durante el mantenimiento preventivo de una máquina CNC 3018. Reconoce la máquina real con Vuforia Model Target, proyecta un holograma guía para alinear el visor, resalta en azul las piezas a intervenir en cada paso (varillas roscadas, rodamientos lineales, motor NEMA 17) y muestra paneles informativos al tocar cada componente.
+    en: Mixed reality application for Microsoft HoloLens 2 that guides a technician step by step through the preventive maintenance of a CNC 3018 machine. It recognizes the real machine with Vuforia Model Target, projects a guide hologram to align the headset, highlights in blue the parts to service at each step (threaded rods, linear bearings, NEMA 17 motor) and shows information panels when each component is tapped.
+  tags: [Unity, C#, HoloLens 2, Vuforia]
+  youtubeId: z_svGxR57iQ
+
+- id: quiz-interactivo-vr
+  order: 2
+  name: { es: Quiz Interactivo — VR, en: Interactive Quiz — VR }
+  type: { es: Realidad virtual, en: Virtual reality }
+  desc:
+    es: Videojuego de realidad virtual con formato de cuestionario, en el que los jugadores responden preguntas a través de distintos minijuegos. Combina mecánicas educativas con una experiencia inmersiva para aprender de forma dinámica y entretenida. Desarrollado en Unity con contenido propio y recursos de la Unity Asset Store.
+    en: Virtual reality quiz game in which players answer questions through a variety of minigames. It combines educational mechanics with an immersive experience to make learning dynamic and fun. Built in Unity with original content and assets from the Unity Asset Store.
+  tags: [Unity, C#, VR]
+  youtubeId: 1-JZBwsOv3s
+
+- id: slenderman-vr
+  order: 3
+  name: Slenderman — VR
+  type: { es: Realidad virtual, en: Virtual reality }
+  desc:
+    es: 'Videojuego de terror en realidad virtual inspirado en el creepypasta de Slenderman y en el juego original Slender: The Eight Pages. Desarrollado en Unity, combinando contenido propio con recursos de la Unity Asset Store.'
+    en: 'Virtual reality horror game inspired by the Slenderman creepypasta and the original game Slender: The Eight Pages. Built in Unity, combining original content with assets from the Unity Asset Store.'
+  tags: [Unity, C#, VR]
+  youtubeId: MYUGQbxZZvo

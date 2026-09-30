@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+import { LINKS } from '../data/links.js';
+
+const networks = [
+  { key: 'linkedin',   label: 'LinkedIn' },
+  { key: 'artstation', label: 'ArtStation' },
+  { key: 'github',     label: 'GitHub' },
+];
+---
+<div class="socials">
+  {networks.map(n => (
+    <a class="social-link" href={LINKS[n.key]} target="_blank" rel="noopener noreferrer" aria-label={n.label}>
+      <Icon name={n.key} />
+    </a>
+  ))}
+</div>

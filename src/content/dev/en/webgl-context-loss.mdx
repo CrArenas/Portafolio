@@ -1,0 +1,152 @@
+---
+title: Five WebGL scenes in a portfolio without the browser killing them
+summary: How I solved WebGL context loss in my portfolio with Three.js and Astro, and how I cut the 3D models from 14.6 MB to 1.8 MB without any visible difference.
+date: 2026-09-30
+stack: [Astro, Three.js, WebGL, Anime.js, glTF]
+role: Design & development
+featured: true
+---
+
+## The problem
+
+My portfolio has several 3D scenes: background particles, an interactive grid
+on the home page and one viewer per 3D model. Each one uses its own
+`WebGLRenderer`, and each renderer opens a **WebGL context**.
+
+Browsers limit how many contexts can be alive at once (on phones and modest
+GPUs, only a few). When the limit is exceeded the browser gives no warning: it
+**kills the oldest context** and that canvas stays blank forever. In my case,
+the victim was the home page grid. Visiting the models page and coming back was
+enough to find it empty.
+
+On top of that there was the weight: the three models added up to **14.6 MB**,
+and the droid alone had 8 million vertices. They were made for 3D printing, not
+for the web.
+
+## My role
+
+Personal project: design, development and 3D modeling.
+
+## Architecture
+
+The site is built with **Astro**: every section is static HTML per language
+(`/es/…`, `/en/…`) and navigation uses View Transitions, so there are no full
+page reloads. Three.js draws the scenes and Anime.js animates the entrances and
+the camera.
+
+The rule that solved the problem is simple: **a scene only exists while it is
+visible**.
+
+## Technical challenges
+
+### 1. `dispose()` does not release the context
+
+The first thing I tried was destroying the scenes when leaving each page with
+`renderer.dispose()`. It wasn't enough: `dispose()` frees geometries and
+buffers, but the context stays alive until the garbage collector decides
+otherwise. The key was forcing it:
+
+```js
+return () => {
+  running = false;          // stops the requestAnimationFrame loop
+  disposeObject(scene);     // geometries, materials and textures
+  renderer.dispose();
+  renderer.forceContextLoss(); // actually releases the WebGL context
+};
+```
+
+### 2. Recovering if it is lost anyway
+
+Even when released properly, a context can be lost for other reasons (the GPU
+resets, the system reclaims memory). That's why every scene is mounted through
+a wrapper that listens for `webglcontextlost` and recreates it on a fresh
+canvas, because a canvas whose context was lost can't be reused:
+
+```js
+function mountScene(initialCanvas, init, { retries = 3 } = {}) {
+  let canvas = initialCanvas;
+  let cleanup = null;
+  let attempts = 0;
+
+  const onLost = (e) => {
+    e.preventDefault();
+    if (attempts++ >= retries) return;
+    setTimeout(start, 500);
+  };
+
+  function start() {
+    canvas.removeEventListener('webglcontextlost', onLost);
+    cleanup?.();
+    const fresh = canvas.cloneNode(false);
+    canvas.replaceWith(fresh);
+    canvas = fresh;
+    canvas.addEventListener('webglcontextlost', onLost);
+    cleanup = init(canvas);
+  }
+
+  start();
+  return () => cleanup?.();
+}
+```
+
+### 3. Fitting it into Astro's View Transitions
+
+With Astro's client-side router, scripts run only once and the DOM is replaced
+on every navigation. The lifecycle comes down to two events:
+
+```js
+document.addEventListener('astro:page-load', startPageScenes); // also on first load
+document.addEventListener('astro:before-swap', stopPageScenes); // before leaving the page
+```
+
+The background particles are the exception: they live in a container with
+`transition:persist`, so they are created once and survive navigation.
+
+The model viewers are also created **only when their card scrolls into view**,
+using an `IntersectionObserver`. If nobody scrolls down to them, they are never
+downloaded and never open a context.
+
+### 4. From 14.6 MB to 1.8 MB
+
+Simplifying the models with [meshoptimizer](https://github.com/zeux/meshoptimizer)
+didn't work at first: the droid barely went from 8 to 5.3 million vertices. The
+cause was in the attributes. Every vertex had its own UV coordinates and
+hard-edge normals, so the mesh was split into thousands of pieces and the
+simplifier couldn't touch their borders.
+
+These models have no textures, so the UVs were useless. And the glTF
+specification says a mesh without normals is rendered with **flat shading**,
+exactly the look a hard-surface model is after. Removing both attributes,
+welding vertices and simplifying changed the result completely:
+
+| Model       | Before | After  | Vertices          |
+| ----------- | ------ | ------ | ----------------- |
+| B1 Droid    | 9.8 MB | 672 KB | 8.0 M → 188 k     |
+| Razor Crest | 3.6 MB | 808 KB | 2.2 M → 258 k     |
+| AT-TE       | 1.3 MB | 312 KB | 666 k → 79 k      |
+
+There was a trap along the way: glTF-Transform's `dedup()` step merged
+materials with identical properties, and with them went the **names** I use to
+color each part. The ship came out in a single color. The fix was excluding
+materials from deduplication.
+
+I compared every model before and after from the same angle (using
+`prefers-reduced-motion` to freeze the camera). The Razor Crest needed more
+detail than the others: with the first settings its nose broke apart.
+
+## Result
+
+- The home page grid no longer disappears, however you navigate.
+- The models weigh **88% less** and look the same.
+- Leaving a page frees all of its GPU memory.
+- The optimization process is now a script (`npm run optimize:model`) for
+  future models.
+
+## Lessons learned
+
+- **Releasing resources in WebGL is explicit.** If a scene can disappear, its
+  cleanup function matters as much as its setup.
+- **A model for printing is not a model for the web.** The resolution a 3D
+  printer needs is invisible on a 300-pixel card.
+- **Verify with screenshots, not numbers.** The vertex count said the first
+  version of the ship was fine; the screenshot said otherwise.

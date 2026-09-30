@@ -1,0 +1,55 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { ui, formatDate } from '../../../data/i18n.js';
+import { pageUrl } from '../../../data/routes.js';
+import { getPostPaths, readingMinutes } from '../../../utils/content.js';
+
+export const getStaticPaths = getPostPaths;
+
+const { lang } = Astro.params;
+const { post } = Astro.props;
+const t = ui[lang];
+const { title, summary, date, stack, role, repo, demo, draft } = post.data;
+const { Content } = await render(post);
+---
+<BaseLayout lang={lang} current="dev" title={title} description={summary} ogType="article">
+  <article class="post">
+    <a class="post-back" href={pageUrl(lang, 'dev')}><span aria-hidden="true">←</span> {t.dev.back}</a>
+
+    <header class="post-header">
+      <div class="post-meta">
+        <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingMinutes(post)} {t.dev.minutes}</span>
+        {draft && <span class="post-draft">{t.dev.draft}</span>}
+      </div>
+      <h1 class="post-title">{title}</h1>
+      <p class="post-summary">{summary}</p>
+
+      <dl class="post-facts">
+        <div>
+          <dt>{t.dev.role}</dt>
+          <dd>{role}</dd>
+        </div>
+        <div>
+          <dt>{t.dev.stack}</dt>
+          <dd class="project-tags">{stack.map(s => <span class="tag">{s}</span>)}</dd>
+        </div>
+        {(repo || demo) && (
+          <div>
+            <dt>{t.dev.links}</dt>
+            <dd class="post-links">
+              {repo && <a href={repo} target="_blank" rel="noopener noreferrer">{t.dev.repo} ↗</a>}
+              {demo && <a href={demo} target="_blank" rel="noopener noreferrer">{t.dev.demo} ↗</a>}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

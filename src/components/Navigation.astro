@@ -1,0 +1,69 @@
+---
+import Socials from './Socials.astro';
+import { ui } from '../data/i18n.js';
+import { pages, pageUrl } from '../data/routes.js';
+
+const { lang, current, altUrl } = Astro.props;
+const t = ui[lang];
+const altLang = lang === 'es' ? 'en' : 'es';
+const items = pages.map(p => ({ ...p, href: pageUrl(lang, p.id), label: t.nav[p.id] }));
+---
+<!-- Navbar móvil -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-top">
+    <div>
+      <div class="mobile-nav-logo">Cristian Arenas</div>
+      <div class="mobile-nav-subtitle">{t.spine.role}</div>
+    </div>
+    <div class="mobile-nav-actions">
+      <a class="lang-btn" href={altUrl} hreflang={altLang} aria-label={t.langAria}>
+        <span class:list={{ 'is-current': lang === 'es' }}>ES</span>
+        <span class="lang-sep">/</span>
+        <span class:list={{ 'is-current': lang === 'en' }}>EN</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav-menu" id="mobile-nav-menu">
+    <div class="mobile-nav-links">
+      {items.map(p => (
+        <a class:list={['mobile-nav-item', { active: p.id === current }]} href={p.href} aria-current={p.id === current ? 'page' : undefined}>
+          <span class="nav-num">{p.num}</span>
+          <span class="nav-label">{p.label}</span>
+        </a>
+      ))}
+    </div>
+    <div class="mobile-nav-footer">
+      <Socials />
+    </div>
+  </div>
+</nav>
+
+<!-- Spine desktop -->
+<aside class="spine">
+  <div class="spine-logo">
+    <div class="title">Cristian Arenas</div>
+    <div class="subtitle">{t.spine.role}</div>
+    <span class="ornament"></span>
+  </div>
+  <nav class="nav">
+    {items.map(p => (
+      <a class:list={['nav-item', { active: p.id === current }]} href={p.href} aria-current={p.id === current ? 'page' : undefined}>
+        <span class="nav-num">{p.num}</span>
+        <span class="nav-label">{p.label}</span>
+        <span class="nav-dot"></span>
+      </a>
+    ))}
+  </nav>
+  <div class="spine-footer">
+    <div class="spine-footer-label">{t.spine.subtitle}</div>
+    <Socials />
+    <a class="lang-btn" href={altUrl} hreflang={altLang} aria-label={t.langAria}>
+      <span class:list={{ 'is-current': lang === 'es' }}>ES</span>
+      <span class="lang-sep">/</span>
+      <span class:list={{ 'is-current': lang === 'en' }}>EN</span>
+    </a>
+  </div>
+</aside>

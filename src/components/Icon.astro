@@ -1,0 +1,6 @@
+---
+import { ICON_PATHS } from '../data/links.js';
+
+const { name, size = 18 } = Astro.props;
+---
+<svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true"><path d={ICON_PATHS[name]} /></svg>

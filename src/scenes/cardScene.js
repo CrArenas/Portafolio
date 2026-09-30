@@ -7,10 +7,29 @@ import 'animejs/adapters/three'; // registra Object3D/Material como targets anim
 import { prefersReducedMotion } from '../utils/motion.js';
 
 // Guarda en memoria los .glb descargados: las tarjetas se recrean cada vez
-// que se entra a la página de modelos y así no se vuelven a descargar.
+// que se entra a la página y así no se vuelven a descargar.
 THREE.Cache.enabled = true;
 
-export function initCardScene(canvas, project) {
+// Un solo loader para todas las tarjetas: el decodificador Draco (local,
+// empaquetado por Vite) arranca sus workers una vez y se reutilizan.
+const dracoLoader = new DRACOLoader();
+const gltfLoader = new GLTFLoader().setDRACOLoader(dracoLoader);
+
+// Libera geometrías, materiales y texturas de un objeto y sus hijos.
+function disposeObject(root) {
+  root.traverse(child => {
+    child.geometry?.dispose();
+    const mats = Array.isArray(child.material) ? child.material : child.material ? [child.material] : [];
+    mats.forEach(mat => {
+      Object.values(mat).forEach(value => value?.isTexture && value.dispose());
+      mat.dispose();
+    });
+  });
+}
+
+// model: ver src/content.config.js (colección "models")
+// onProgress(0..1) y onLoad() permiten mostrar el estado de carga.
+export function initCardScene(canvas, model, { onProgress, onLoad } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
@@ -26,7 +45,7 @@ export function initCardScene(canvas, project) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.enableZoom = false;
-  controls.autoRotate = true;
+  controls.autoRotate = !prefersReducedMotion;
   controls.autoRotateSpeed = 1.5;
 
   // Luces
@@ -39,27 +58,33 @@ export function initCardScene(canvas, project) {
   scene.add(fillLight);
 
   // Plataforma
-  const platformGeo = new THREE.CylinderGeometry(1.0, 1.0, 0.04, 64);
-  const platformMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1a2e, metalness: 0.6, roughness: 0.3, transparent: true, opacity: 0.7,
-  });
-  const platform = new THREE.Mesh(platformGeo, platformMat);
+  const platform = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.0, 1.0, 0.04, 64),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 0.6, roughness: 0.3, transparent: true, opacity: 0.7 }),
+  );
   scene.add(platform);
 
   // Anillo
-  const ringGeo = new THREE.TorusGeometry(1.1, 0.015, 8, 80);
-  const ringMat = new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 });
-  const ring = new THREE.Mesh(ringGeo, ringMat);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(1.1, 0.015, 8, 80),
+    new THREE.MeshBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.5 }),
+  );
   ring.rotation.x = Math.PI / 2;
   scene.add(ring);
+
+  // Plataforma y anillo aparecen junto con el modelo (mientras carga, el
+  // anillo visto de canto es una línea que cruza el indicador de carga).
+  const showModel = () => {
+    platform.visible = ring.visible = true;
+    onLoad?.();
+  };
+  platform.visible = ring.visible = false;
 
   // Guarda toda animación de Anime.js creada en esta escena para poder
   // detenerla/limpiarla cuando la tarjeta se destruye (evita leaks).
   const cardAnims = [];
 
-  // Pulso del anillo — antes era matemática manual dentro del tick(),
-  // ahora es una animación de Anime.js sobre el Object3D/Material real
-  // (adaptador de Three.js), con loop+alternate y control de reproducción.
+  // Pulso del anillo (adaptador de Three.js de Anime.js)
   if (!prefersReducedMotion) {
     cardAnims.push(
       animate(ring.material, { opacity: [0.3, 0.5], duration: 1600, ease: 'inOutSine', loop: true, alternate: true })
@@ -69,126 +94,98 @@ export function initCardScene(canvas, project) {
     );
   }
 
-  const fallbackColor = new THREE.Color(project.color);
-
+  // Si el .glb no carga se muestra un icosaedro del color del modelo
   function loadFallback() {
-    let geo;
-    switch (project.geometry) {
-      case 'torus': geo = new THREE.TorusGeometry(1, 0.35, 16, 60); break;
-      case 'box':   geo = new THREE.BoxGeometry(1.5, 1.5, 1.5); break;
-      default:      geo = new THREE.IcosahedronGeometry(1.2, 1);
-    }
-    const mat = new THREE.MeshStandardMaterial({ color: fallbackColor, metalness: 0.7, roughness: 0.2 });
-    scene.add(new THREE.Mesh(geo, mat));
-    const wireMat = new THREE.MeshBasicMaterial({ color: fallbackColor, wireframe: true, transparent: true, opacity: 0.12 });
-    const wire = new THREE.Mesh(geo, wireMat);
+    const color = new THREE.Color(model.color);
+    const geo = new THREE.IcosahedronGeometry(1.2, 1);
+    scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, metalness: 0.7, roughness: 0.2 })));
+    const wire = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.12 }));
     wire.scale.setScalar(1.02);
     scene.add(wire);
+    showModel();
   }
 
-  if (project.file) {
-    const basePath = project.basePath || '/modelos-3d/';
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-    const loader = new GLTFLoader();
-    loader.setDRACOLoader(dracoLoader);
-    loader.load(
-      `${basePath}${project.file}`,
-      (gltf) => {
-        // La tarjeta pudo destruirse mientras el modelo cargaba
-        if (!running) return;
-        const model = gltf.scene;
+  gltfLoader.load(
+    model.file,
+    (gltf) => {
+      // La tarjeta pudo destruirse mientras el modelo cargaba
+      if (!running) return disposeObject(gltf.scene);
+      const object = gltf.scene;
 
-        // Centrar y escalar
-        const box = new THREE.Box3().setFromObject(model);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        // baseSize controla qué tan grande se ve en la tarjeta (default 1.8)
-        const baseSize = project.baseSize ?? 1.8;
-        const refDim = project.scaleAxis === 'y' ? size.y : Math.max(size.x, size.y, size.z);
-        const autoScale = baseSize / refDim;
-        const scaleFactor = autoScale * (project.scale ?? 1.0);
-        model.scale.setScalar(scaleFactor);
-        model.position.set(
-          -center.x * scaleFactor,
-          -center.y * scaleFactor,
-          -center.z * scaleFactor
+      // Centrar y escalar: baseSize es la altura (o la dimensión mayor)
+      // que ocupa el modelo en la tarjeta; scale lo ajusta a mano.
+      const box = new THREE.Box3().setFromObject(object);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const refDim = model.scaleAxis === 'y' ? size.y : Math.max(size.x, size.y, size.z);
+      const scaleFactor = (model.baseSize / refDim) * model.scale;
+      object.scale.setScalar(scaleFactor);
+      object.position.copy(center).multiplyScalar(-scaleFactor);
+
+      // Colores por nombre de material
+      object.traverse(child => {
+        if (!child.isMesh) return;
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(mat => {
+          const cfg = model.colorMap[mat.name];
+          if (!cfg) return;
+          mat.color = new THREE.Color(cfg.color);
+          mat.roughness = cfg.roughness;
+          mat.metalness = 0.05;
+          if (cfg.emissive) {
+            mat.emissive = new THREE.Color(cfg.emissive);
+            mat.emissiveIntensity = 0.5;
+          }
+          mat.needsUpdate = true;
+        });
+      });
+
+      scene.add(object);
+
+      // Plataforma y anillo en la base del modelo escalado
+      const finalBox  = new THREE.Box3().setFromObject(object);
+      const finalSize = finalBox.getSize(new THREE.Vector3());
+      const bottomY   = finalBox.min.y;
+      const ringRadius = Math.max(finalSize.x, finalSize.z) * 0.6 * model.platformScale;
+      platform.geometry.dispose();
+      platform.geometry = new THREE.CylinderGeometry(ringRadius, ringRadius, 0.04, 64);
+      ring.geometry.dispose();
+      ring.geometry = new THREE.TorusGeometry(ringRadius * 1.05, 0.015, 8, 80);
+      platform.position.y = bottomY - 0.04;
+      ring.position.y     = bottomY - 0.02;
+
+      // Cámara a distancia fija relativa al baseSize
+      const finalZ = Math.max(model.baseSize * 1.6, 2.5);
+      const camY = model.cameraY;
+      controls.target.set(0, 0, 0);
+
+      if (prefersReducedMotion) {
+        camera.position.set(0, camY, finalZ);
+      } else {
+        // Dolly-in: la cámara arranca más lejos/arriba y "vuela" hasta su
+        // posición final cuando el modelo termina de cargar.
+        camera.position.set(0, camY + finalZ * 0.35, finalZ * 1.8);
+        cardAnims.push(
+          animate(camera.position, {
+            y: camY,
+            z: finalZ,
+            duration: 1100,
+            ease: 'outExpo',
+            onUpdate: () => controls.update(),
+          })
         );
-
-        // Aplicar colorMap si el modelo lo tiene definido
-        if (project.colorMap) {
-          model.traverse(child => {
-            if (!child.isMesh) return;
-            const applyMat = (mat) => {
-              const cfg = project.colorMap[mat.name];
-              if (cfg) {
-                mat.color = new THREE.Color(cfg.color);
-                mat.roughness = cfg.roughness ?? 0.8;
-                mat.metalness = 0.05;
-                if (cfg.emissive) {
-                  mat.emissive = new THREE.Color(cfg.emissive);
-                  mat.emissiveIntensity = 0.5;
-                }
-                mat.needsUpdate = true;
-              }
-            };
-            if (Array.isArray(child.material)) child.material.forEach(applyMat);
-            else applyMat(child.material);
-          });
-        }
-
-        scene.add(model);
-
-        // Posicionar plataforma y anillo en la base del modelo escalado
-        const finalBox  = new THREE.Box3().setFromObject(model);
-        const finalSize = finalBox.getSize(new THREE.Vector3());
-        const bottomY   = finalBox.min.y;
-
-        // Escalar plataforma y anillo — independiente por modelo
-        const platformScale = project.platformScale ?? 1.0;
-        const ringRadius = Math.max(finalSize.x, finalSize.z) * 0.6 * platformScale;
-        platform.geometry.dispose();
-        platform.geometry = new THREE.CylinderGeometry(ringRadius, ringRadius, 0.04, 64);
-        ring.geometry.dispose();
-        ring.geometry = new THREE.TorusGeometry(ringRadius * 1.05, 0.015, 8, 80);
-
-        platform.position.y = bottomY - 0.04;
-        ring.position.y     = bottomY - 0.02;
-
-        // Ajustar cámara — distancia fija relativa al baseSize
-        const camDist = (project.baseSize ?? 1.8) * 1.6;
-        const camY = project.cameraY ?? 0;
-        const finalZ = Math.max(camDist, 2.5);
-        controls.target.set(0, 0, 0);
-
-        if (prefersReducedMotion) {
-          camera.position.set(0, camY, finalZ);
-        } else {
-          // Dolly-in: la cámara arranca más lejos/arriba y "vuela" hasta su
-          // posición final cuando el modelo termina de cargar (Three.js adapter).
-          camera.position.set(0, camY + finalZ * 0.35, finalZ * 1.8);
-          cardAnims.push(
-            animate(camera.position, {
-              y: camY,
-              z: finalZ,
-              duration: 1100,
-              ease: 'outExpo',
-              onUpdate: () => controls.update(),
-            })
-          );
-        }
-        controls.update();
-      },
-      null,
-      () => loadFallback()
-    );
-  } else {
-    loadFallback();
-  }
+      }
+      controls.update();
+      showModel();
+    },
+    (e) => { if (e.total) onProgress?.(e.loaded / e.total); },
+    () => { if (running) loadFallback(); }
+  );
 
   function resize() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
+    if (!w || !h) return;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
@@ -198,13 +195,10 @@ export function initCardScene(canvas, project) {
   ro.observe(canvas.parentElement || canvas);
 
   let running = true;
-  const page = canvas.closest('.page');
 
   function tick() {
     if (!running) return;
     requestAnimationFrame(tick);
-    // No renderizar mientras la página de modelos está oculta
-    if (page && !page.classList.contains('active')) return;
     controls.update();
     renderer.render(scene, camera);
   }
@@ -214,11 +208,11 @@ export function initCardScene(canvas, project) {
     running = false;
     ro.disconnect();
     controls.dispose();
+    // Detiene las animaciones de Anime.js (dolly-in, pulso del anillo)
+    cardAnims.forEach((a) => a.pause());
+    utils.remove([camera.position, ring.material, ring.scale]);
+    disposeObject(scene);
     renderer.dispose();
     renderer.forceContextLoss(); // libera el contexto WebGL de verdad
-    // Detiene y libera cualquier animación de Anime.js aún corriendo
-    // (dolly-in de cámara, pulso del anillo) para no dejar tweens huérfanos.
-    cardAnims.forEach((a) => a.pause && a.pause());
-    utils.remove([camera.position, ring.material, ring.scale]);
   };
 }

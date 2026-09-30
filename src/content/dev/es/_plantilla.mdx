@@ -1,0 +1,52 @@
+---
+# Plantilla de artículo. Los archivos que empiezan por "_" no se publican.
+# 1. Copia este archivo a src/content/dev/es/<slug>.mdx (sin el "_")
+# 2. Crea su traducción con el MISMO nombre en src/content/dev/en/<slug>.mdx
+#    (el build falla si falta una de las dos versiones)
+# 3. Mientras lo escribes deja draft: true; solo se ve con `npm run dev`
+title: Título del proyecto o del artículo
+summary: Una o dos frases que expliquen qué construiste y por qué importa. Se usa en la tarjeta, en Google y al compartir en LinkedIn.
+date: 2026-01-31
+stack: [Laravel, React, MySQL]
+role: Desarrollo fullstack (equipo de 3)
+repo: https://github.com/CrArenas/nombre-del-repo   # opcional
+demo: https://demo.ejemplo.com                      # opcional
+featured: false
+draft: true
+---
+
+## El problema
+
+Qué necesitaba resolverse, para quién y con qué restricciones (tiempo,
+equipo, presupuesto, tecnología impuesta).
+
+## Mi rol
+
+Qué hiciste tú exactamente. Si fue en equipo, separa tu aporte del resto.
+
+## Arquitectura y stack
+
+Cómo está armado: capas, servicios, base de datos, despliegue. Explica
+**por qué** elegiste cada pieza, no solo cuál es.
+
+## Retos técnicos
+
+Uno o dos problemas difíciles contados con detalle. Aquí es donde el código
+luce:
+
+```php
+// Fragmento corto con la lógica que importa, no el archivo entero
+public function store(Request $request)
+{
+    // ...
+}
+```
+
+## Resultado
+
+Qué quedó funcionando. Números si los hay (usuarios, tiempos, peso,
+rendimiento) y capturas.
+
+## Aprendizajes
+
+Qué harías distinto hoy y qué te llevas para el próximo proyecto.

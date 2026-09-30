@@ -196,7 +196,9 @@ export function initBgScene(canvas) {
   // ANIMATION
   // -----------------------------
 
-  const clock = new THREE.Clock();
+  // Timer (reemplaza a THREE.Clock): connect() lo pausa con la pestaña oculta
+  const timer = new THREE.Timer();
+  timer.connect(document);
 
   let running = true;
 
@@ -206,7 +208,8 @@ export function initBgScene(canvas) {
 
     requestAnimationFrame(tick);
 
-    const t = clock.getElapsedTime();
+    timer.update();
+    const t = timer.getElapsed();
 
     mat.uniforms.uTime.value = t;
 
@@ -227,6 +230,7 @@ export function initBgScene(canvas) {
     running = false;
 
     observer.disconnect();
+    timer.dispose();
 
     window.removeEventListener('resize', resize);
 

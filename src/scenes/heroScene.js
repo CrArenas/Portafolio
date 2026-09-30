@@ -17,7 +17,9 @@ export function initHeroScene(canvas) {
   const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
   camera.position.set(0, 0, 22);
 
-  const clock = new THREE.Clock();
+  // Timer (reemplaza a THREE.Clock): connect() lo pausa con la pestaña oculta
+  const timer = new THREE.Timer();
+  timer.connect(document);
 
   // ── Grid de puntos ──────────────────────────────────────────────────────
   // Suficientes columnas para cubrir contenedores anchos.
@@ -188,7 +190,7 @@ export function initHeroScene(canvas) {
   let rippleIndex = 0;
   const addRipple = (nx, ny) => {
     const half = mat.uniforms.uHalf.value;
-    mat.uniforms.uRipples.value[rippleIndex].set(nx * half.x, ny * half.y, clock.getElapsedTime());
+    mat.uniforms.uRipples.value[rippleIndex].set(nx * half.x, ny * half.y, timer.getElapsed());
     rippleIndex = (rippleIndex + 1) % MAX_RIPPLES;
   };
 
@@ -237,14 +239,13 @@ export function initHeroScene(canvas) {
   // ── Loop ────────────────────────────────────────────────────────────────
   let running = true;
   let nextAutoRipple = 2.5;
-  const page = canvas.closest('.page');
 
   function tick() {
     if (!running) return;
     requestAnimationFrame(tick);
-    if (page && !page.classList.contains('active')) return;
 
-    const t = clock.getElapsedTime();
+    timer.update();
+    const t = timer.getElapsed();
 
     // Sin interacción: el "cursor" recorre la malla solo y cada tanto lanza
     // una onda, así se ve viva (también en móviles) e invita a tocarla.
@@ -270,6 +271,7 @@ export function initHeroScene(canvas) {
     window.removeEventListener('touchmove', onTouchMove);
     canvas.removeEventListener('pointerdown', onPointerDown);
     heroAnims.forEach((a) => a.pause && a.pause());
+    timer.dispose();
     geo.dispose();
     mat.dispose();
     lineGeo.dispose();
