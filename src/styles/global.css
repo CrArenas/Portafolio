@@ -1129,14 +1129,6 @@ button:focus-visible {
   margin-bottom: 8px;
 }
 
-.post-card-arrow {
-  display: inline-block;
-  color: var(--gold);
-  transition: transform 0.25s;
-}
-
-.post-card:hover .post-card-arrow { transform: translateX(4px); }
-
 .dev-empty {
   margin-top: 40px;
   font-family: var(--font-mono);

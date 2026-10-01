@@ -13,7 +13,7 @@ const { title, summary, date, stack, draft } = post.data;
       <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
       {draft && <span class="post-draft">{t.dev.draft}</span>}
     </div>
-    <h3 class="post-card-title">{title} <span class="post-card-arrow" aria-hidden="true">→</span></h3>
+    <h3 class="post-card-title">{title}</h3>
     <p class="project-desc">{summary}</p>
     <div class="project-tags">{stack.map(s => <span class="tag">{s}</span>)}</div>
   </a>
