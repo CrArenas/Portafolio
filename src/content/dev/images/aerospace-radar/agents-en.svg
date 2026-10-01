@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600">
+<style>
+  .bg { fill: #12121E; }
+  .box { fill: #1A1A2E; stroke-width: 1.5; }
+  .title { font: 600 19px Consolas, 'JetBrains Mono', monospace; fill: #E8E0D0; }
+  .sub { font: 14px Consolas, 'JetBrains Mono', monospace; fill: #a89f8f; }
+  .model { font: 13px Consolas, monospace; letter-spacing: 0.5px; }
+  .lbl { font: 14px Consolas, monospace; fill: #C9A96E; }
+  .exit { font: 13px Consolas, monospace; fill: #a89f8f; }
+  .flow { fill: none; stroke: #C9A96E; stroke-width: 2; }
+  .loop { fill: none; stroke: #7a6240; stroke-width: 1.8; stroke-dasharray: 6 5; }
+  .stub { fill: none; stroke: #5a5560; stroke-width: 1.5; }
+  .pill { fill: #C9A96E; }
+  .pilltxt { font: 600 17px Consolas, monospace; fill: #0D0D14; }
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#C9A96E"/></marker></defs>
+<rect class="bg" width="1200" height="600"/>
+<rect x="30" y="160" width="230" height="92" rx="8" class="box" style="stroke:#4A90D9"/><text x="46" y="192" class="title">input_guardrail</text><text x="46" y="216" class="sub">classifies the input</text><text x="46" y="238" class="model" style="fill:#4A90D9">small model</text>
+<rect x="310" y="160" width="230" height="92" rx="8" class="box" style="stroke:#C9A96E"/><text x="326" y="192" class="title">orchestrator</text><text x="326" y="216" class="sub">routes and decomposes</text><text x="326" y="238" class="model" style="fill:#C9A96E">large model</text>
+<rect x="600" y="70" width="230" height="92" rx="8" class="box" style="stroke:#C9A96E"/><text x="616" y="102" class="title">retrieve</text><text x="616" y="126" class="sub">searches the corpus</text><text x="616" y="148" class="model" style="fill:#C9A96E">large model</text>
+<rect x="600" y="260" width="230" height="92" rx="8" class="box" style="stroke:#4A90D9"/><text x="616" y="292" class="title">visualizer</text><text x="616" y="316" class="sub">picks components</text><text x="616" y="338" class="model" style="fill:#4A90D9">small model</text>
+<rect x="900" y="160" width="250" height="92" rx="8" class="box" style="stroke:#C9A96E"/><text x="916" y="192" class="title">write</text><text x="916" y="216" class="sub">writes, no tools</text><text x="916" y="238" class="model" style="fill:#C9A96E">large model</text>
+<rect x="900" y="420" width="250" height="92" rx="8" class="box" style="stroke:#4A90D9"/><text x="916" y="452" class="title">verifier</text><text x="916" y="476" class="sub">citation by citation, in code</text><text x="916" y="498" class="model" style="fill:#4A90D9">small model</text>
+<rect x="600" y="450" width="230" height="92" rx="8" class="box" style="stroke:#4A90D9"/><text x="616" y="482" class="title">output_guardrail</text><text x="616" y="506" class="sub">toxicity and leaks</text><text x="616" y="528" class="model" style="fill:#4A90D9">small model</text>
+<rect x="330" y="466" width="190" height="60" rx="30" class="pill"/>
+<text x="425" y="502" text-anchor="middle" class="pilltxt">answer</text>
+<path d="M260 206 L308 206" class="flow" marker-end="url(#a)"/>
+<path d="M540 190 C570 180 570 116 598 116" class="flow" marker-end="url(#a)"/>
+<path d="M540 222 C570 232 570 306 598 306" class="flow" marker-end="url(#a)"/>
+<text x="470" y="48" text-anchor="middle" class="lbl">text · visual · both (in parallel)</text>
+<path d="M830 116 C865 116 865 190 898 192" class="flow" marker-end="url(#a)"/>
+<path d="M830 306 C865 306 865 222 898 222" class="flow" marker-end="url(#a)"/>
+<path d="M1025 252 L1025 418" class="flow" marker-end="url(#a)"/>
+<text x="1035" y="340" text-anchor="start" class="lbl">with corpus</text>
+<path d="M920 252 C860 330 780 360 740 448" class="flow" marker-end="url(#a)"/>
+<text x="800" y="395" text-anchor="end" class="lbl">visual route</text>
+<path d="M898 486 L832 494" class="flow" marker-end="url(#a)"/>
+<path d="M598 496 L522 496" class="flow" marker-end="url(#a)"/>
+<path d="M1150 440 C1195 380 1195 20 715 20 L715 68" class="loop" marker-end="url(#a)"/>
+<text x="940" y="70" text-anchor="middle" class="exit">rejected → rephrase (max. 2 rounds)</text>
+<path d="M145 252 L145 300" class="stub"/><text x="145" y="320" text-anchor="middle" class="exit">attack → end</text>
+<path d="M425 252 L425 300" class="stub"/><text x="425" y="320" text-anchor="middle" class="exit">greeting → fixed answer</text>
+<path d="M1060 160 L1060 128" class="stub"/><text x="1060" y="120" text-anchor="middle" class="exit">no evidence → end</text>
+</svg>

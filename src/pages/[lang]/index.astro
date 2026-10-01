@@ -1,18 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
 import { ui, langPaths } from '../../data/i18n.js';
-import { pageUrl } from '../../data/routes.js';
-import { getPosts } from '../../utils/content.js';
 
 export const getStaticPaths = langPaths;
 
 const { lang } = Astro.params;
 const t = ui[lang];
-const pad = (n) => String(n).padStart(2, '0');
-const [models, xr, posts] = await Promise.all([getCollection('models'), getCollection('xr'), getPosts(lang)]);
-const latest = posts.slice(0, 3);
 ---
 <BaseLayout lang={lang} current="home">
   <div class="home-hero">
@@ -25,32 +18,11 @@ const latest = posts.slice(0, 3);
       </div>
       <h1 class="section-title" set:html={t.home.title} />
       <p class="section-body">{t.home.body}</p>
-      <div class="home-actions">
-        <a class="btn btn-primary" href={pageUrl(lang, 'dev')}>{t.home.ctaProjects} <span aria-hidden="true">→</span></a>
-        <a class="btn btn-ghost" href={pageUrl(lang, 'contact')}>{t.home.ctaContact}</a>
-      </div>
     </div>
-    <dl class="stats-row">
-      <div class="stat"><dt class="stat-label">{t.home.statProjects}</dt><dd class="stat-num">{pad(xr.length)}</dd></div>
-      <div class="stat"><dt class="stat-label">{t.home.statModels}</dt><dd class="stat-num">{pad(models.length)}</dd></div>
-      <div class="stat"><dt class="stat-label">{t.home.statLocation}</dt><dd class="stat-num">{t.home.location}</dd></div>
-    </dl>
     <div class="home-canvas-wrap" aria-hidden="true">
       <canvas id="hero-canvas"></canvas>
       <span class="hero-canvas-hint hint-pointer">{t.home.canvasHint}</span>
       <span class="hero-canvas-hint hint-touch">{t.home.canvasHintTouch}</span>
     </div>
-
-    {latest.length > 0 && (
-      <section class="home-latest" aria-labelledby="latest-title">
-        <div class="home-latest-head">
-          <h2 class="block-label" id="latest-title">{t.home.latestLabel}</h2>
-          <a class="home-latest-all" href={pageUrl(lang, 'dev')}>{t.home.viewAll} <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="posts-list">
-          {latest.map(post => <PostCard post={post} lang={lang} />)}
-        </div>
-      </section>
-    )}
   </div>
 </BaseLayout>

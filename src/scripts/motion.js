@@ -6,7 +6,6 @@
 import {
   animate,
   createAnimatable,
-  createDrawable,
   createScope,
   createTimeline,
   onScroll,
@@ -27,19 +26,11 @@ export function startMotion() {
     if (reduce) return;
     const page = document.querySelector('.page');
 
-    drawHeaderLine();
     revealTitle();
     rotateRole();
     revealOnScroll(page);
     if (finePointer) magnetize();
   });
-}
-
-// La línea dorada bajo el número de página se dibuja de izquierda a derecha.
-function drawHeaderLine() {
-  const line = document.querySelector('.page-header-line line');
-  if (!line) return;
-  animate(createDrawable(line), { draw: ['0 0', '0 1'], duration: 1400, ease: 'inOutQuart', delay: 150 });
 }
 
 // La palabra dorada del título entra letra por letra: cada carácter queda
@@ -74,7 +65,6 @@ function rotateRole() {
 // Tarjetas y bloques aparecen al entrar en pantalla. Se anima `translate`
 // (no `transform`) para no pisar el efecto hover de las tarjetas.
 const REVEAL = [
-  '.stats-row .stat', '.home-latest .post-card',
   '.game-card', '.project-card', '.artstation-card',
   '.posts-list .post-card', '.post-facts',
   '.education-list li', '.skill-group',

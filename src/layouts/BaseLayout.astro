@@ -1,7 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Navigation from '../components/Navigation.astro';
-import PageHeader from '../components/PageHeader.astro';
 import { ui, locales } from '../data/i18n.js';
 import '../styles/global.css';
 
@@ -62,7 +61,6 @@ const ogImage = new URL('/og.png', Astro.site);
           <canvas id="bg-canvas"></canvas>
         </div>
         <section class="page" id={`page-${current}`}>
-          <PageHeader current={current} />
           <slot />
         </section>
       </main>

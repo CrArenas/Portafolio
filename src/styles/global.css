@@ -317,26 +317,6 @@ button:focus-visible {
 .page::-webkit-scrollbar-track { background: transparent; }
 .page::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
 
-/* page number top right */
-.page-number {
-  position: absolute;
-  top: 28px;
-  right: 48px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--gold-dim);
-  letter-spacing: 0.2em;
-}
-
-/* gold top border of page (SVG que se dibuja al entrar) */
-.page-header-line {
-  display: block;
-  width: 100%;
-  height: 2px;
-  margin-bottom: 55px;
-  overflow: visible;
-}
-
 /* Rol que alterna en Inicio */
 .home-role { color: var(--gold); }
 
@@ -428,42 +408,6 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 40px;
-}
-
-.home-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
-}
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  padding-top: 28px;
-  border-top: 1px solid rgba(201,169,110,0.12);
-}
-
-.stat {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 8px;
-}
-
-.stat-num {
-  font-family: var(--font-display);
-  font-size: clamp(24px, 2.4vw, 34px);
-  color: var(--gold);
-  line-height: 1;
-}
-
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: var(--parchment-dim);
-  text-transform: uppercase;
 }
 
 .home-canvas-wrap {
@@ -1141,29 +1085,6 @@ button:focus-visible {
   color: var(--parchment-dim);
 }
 
-/* Últimos artículos en Inicio */
-.home-latest { padding-top: 12px; }
-
-.home-latest-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.home-latest-head .block-label { margin-bottom: 0; }
-
-.home-latest-all {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--gold);
-  text-decoration: none;
-}
-
-.home-latest-all:hover { color: var(--gold-light); }
-
 /* ── ARTÍCULO ── */
 .post-back {
   display: inline-flex;
@@ -1467,15 +1388,8 @@ button:focus-visible {
   .book::after { display: none; }
   .mobile-nav { display: block; }
   .page { padding: 96px 20px 72px; }
-  .page-number { display: none; }
-  .page-header-line { margin-bottom: 32px; }
 
   .home-hero { gap: 32px; }
-  .home-actions .btn { flex: 1 1 auto; }
-  .stats-row { display: flex; flex-wrap: wrap; gap: 20px 32px; }
-  .stat { flex: 1 1 auto; }
-  .stat-num { font-size: 24px; }
-  .stat-label { font-size: 9px; letter-spacing: 0.1em; white-space: nowrap; }
 
   .about-header { flex-direction: column; align-items: flex-start; gap: 28px; }
   .profile-photo-wrap { margin-left: 6px; }

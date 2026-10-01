@@ -12,4 +12,3 @@ export const pages = [
 export const pageUrl = (lang, id) =>
   getRelativeLocaleUrl(lang, pages.find(p => p.id === id).slug);
 
-export const pageNum = (id) => pages.find(p => p.id === id).num;

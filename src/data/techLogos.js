@@ -1,13 +1,20 @@
 import {
+  siCoolify,
   siDocker,
   siExpo,
+  siFastapi,
   siJavascript,
   siJenkins,
   siJsonwebtokens,
+  siLanggraph,
   siLaravel,
   siMysql,
+  siNextdotjs,
   siPhp,
+  siPostgresql,
+  siPython,
   siReact,
+  siTypescript,
 } from 'simple-icons';
 
 // Logo de cada tecnología del `stack` de los artículos (simple-icons).
@@ -23,6 +30,13 @@ const ICONS = {
   'JavaScript':   siJavascript,
   'React Native': siReact,
   'Expo':         siExpo,
+  'Python':       siPython,
+  'FastAPI':      siFastapi,
+  'LangGraph':    siLanggraph,
+  'PostgreSQL':   siPostgresql,
+  'Next.js':      siNextdotjs,
+  'TypeScript':   siTypescript,
+  'Coolify':      siCoolify,
 };
 
 // Los colores de marca casi negros no se ven sobre el fondo oscuro
