@@ -410,6 +410,10 @@ button:focus-visible {
   gap: 40px;
 }
 
+/* En Inicio el título y la descripción usan todo el ancho disponible */
+.home-intro .section-title,
+.home-intro .section-body { max-width: none; }
+
 .home-canvas-wrap {
   width: 100%;
   height: clamp(200px, 30vh, 340px);
