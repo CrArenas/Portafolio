@@ -378,7 +378,11 @@ button:focus-visible {
 /* Texto justificado. La separación silábica (según el lang del <html>)
    evita los huecos grandes entre palabras, sobre todo en móvil. */
 .section-body,
-.project-desc {
+.project-desc,
+.post-summary,
+.prose p,
+.prose li,
+.prose blockquote {
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
@@ -1161,8 +1165,6 @@ button:focus-visible {
 .home-latest-all:hover { color: var(--gold-light); }
 
 /* ── ARTÍCULO ── */
-.post { max-width: 76ch; }
-
 .post-back {
   display: inline-flex;
   gap: 8px;
@@ -1323,6 +1325,8 @@ button:focus-visible {
 }
 
 .prose img {
+  display: block;
+  margin-inline: auto;
   max-width: 100%;
   height: auto;
   border-radius: 4px;
