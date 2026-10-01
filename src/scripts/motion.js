@@ -24,11 +24,10 @@ export function startMotion() {
   }).add(self => {
     const { reduce, finePointer } = self.matches;
     if (reduce) return;
-    const page = document.querySelector('.page');
 
     revealTitle();
     rotateRole();
-    revealOnScroll(page);
+    revealOnScroll();
     if (finePointer) magnetize();
   });
 }
@@ -66,12 +65,12 @@ function rotateRole() {
 // (no `transform`) para no pisar el efecto hover de las tarjetas.
 const REVEAL = [
   '.game-card', '.project-card', '.artstation-card',
-  '.posts-list .post-card', '.post-facts',
+  '.posts-grid .post-card', '.post-facts',
   '.education-list li', '.skill-group',
   '.contact-item',
 ].join(', ');
 
-function revealOnScroll(container) {
+function revealOnScroll() {
   const els = [...document.querySelectorAll(REVEAL)];
   utils.set(els, { opacity: 0, translate: '0px 28px' });
   els.forEach(el => {
@@ -83,7 +82,7 @@ function revealOnScroll(container) {
       duration: 750,
       delay: index * 90,
       ease: 'out(3)',
-      autoplay: onScroll({ container, enter: 'bottom-=40 top', repeat: false }),
+      autoplay: onScroll({ enter: 'bottom-=40 top', repeat: false }),
     });
   });
 }
@@ -92,8 +91,8 @@ function revealOnScroll(container) {
 // Los listeners mueren con los elementos: el menú y la página se reemplazan
 // en cada navegación.
 function magnetize() {
-  document.querySelectorAll('.btn, .social-link, .lang-btn').forEach(el => {
-    const pull = el.classList.contains('btn') ? 0.18 : 0.3;
+  document.querySelectorAll('.social-link, .lang-btn').forEach(el => {
+    const pull = 0.3;
     const magnet = createAnimatable(el, { x: 350, y: 350, ease: 'out(3)' });
     const onMove = (e) => {
       const r = el.getBoundingClientRect();

@@ -15,16 +15,18 @@ const counts = posts.flatMap(p => p.data.stack).reduce((m, s) => m.set(s, (m.get
 const stack = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a) || a.localeCompare(b));
 ---
 <BaseLayout lang={lang} current="dev">
-  <div class="section-eyebrow">{t.dev.eyebrow}</div>
-  <h1 class="section-title" set:html={t.dev.title} />
-  <p class="section-body">{t.dev.body}</p>
+  <header class="page-intro">
+    <div class="section-eyebrow">{t.dev.eyebrow}</div>
+    <h1 class="section-title" set:html={t.dev.title} />
+    <p class="section-body">{t.dev.body}</p>
+  </header>
 
   {posts.length === 0 ? (
     <p class="dev-empty">{t.dev.empty}</p>
   ) : (
     <>
       <TechMarquee items={stack} label={t.dev.techLabel} />
-      <div class="posts-list">
+      <div class="posts-grid">
         {posts.map(post => <PostCard post={post} lang={lang} />)}
       </div>
     </>

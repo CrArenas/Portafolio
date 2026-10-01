@@ -15,9 +15,11 @@ const items = [
 ];
 ---
 <BaseLayout lang={lang} current="contact">
-  <div class="section-eyebrow">{t.contact.eyebrow}</div>
-  <h1 class="section-title" set:html={t.contact.title} />
-  <p class="section-body">{t.contact.body}</p>
+  <header class="page-intro">
+    <div class="section-eyebrow">{t.contact.eyebrow}</div>
+    <h1 class="section-title" set:html={t.contact.title} />
+    <p class="section-body">{t.contact.body}</p>
+  </header>
   <div class="contact-grid">
     {items.map(c => (
       <a class="contact-item" href={LINKS[c.key]} target="_blank" rel="noopener noreferrer">

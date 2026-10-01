@@ -1,20 +1,28 @@
 ---
+import { Image } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { ui, formatDate } from '../data/i18n.js';
 import { postSlug } from '../utils/content.js';
 
 const { post, lang } = Astro.props;
 const t = ui[lang];
-const { title, summary, date, stack, draft } = post.data;
+const { title, summary, date, stack, draft, cover } = post.data;
 ---
 <article class="post-card">
   <a class="post-card-link" href={getRelativeLocaleUrl(lang, `dev/${postSlug(post)}`)}>
-    <div class="post-meta">
-      <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
-      {draft && <span class="post-draft">{t.dev.draft}</span>}
+    {cover && (
+      <div class="post-card-cover">
+        <Image src={cover} alt="" widths={[480, 800, 1200]} sizes="(max-width: 720px) 100vw, 560px" loading="lazy" />
+      </div>
+    )}
+    <div class="post-card-body">
+      <div class="post-meta">
+        <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
+        {draft && <span class="post-draft">{t.dev.draft}</span>}
+      </div>
+      <h3 class="post-card-title">{title}</h3>
+      <p class="post-card-summary">{summary}</p>
+      <div class="project-tags">{stack.map(s => <span class="tag">{s}</span>)}</div>
     </div>
-    <h3 class="post-card-title">{title}</h3>
-    <p class="project-desc">{summary}</p>
-    <div class="project-tags">{stack.map(s => <span class="tag">{s}</span>)}</div>
   </a>
 </article>

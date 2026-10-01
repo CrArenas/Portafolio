@@ -49,12 +49,13 @@ const xr = defineCollection({
 // Los archivos que empiezan por "_" (como la plantilla) se ignoran.
 const dev = defineCollection({
   loader: glob({ pattern: '*/[^_]*.{md,mdx}', base: './src/content/dev' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     summary: z.string(),
     date: z.coerce.date(),
     stack: z.array(z.string()),
     role: z.string(),
+    cover: image().optional(),        // imagen de la tarjeta (ruta relativa al .mdx)
     repo: z.url().optional(),
     demo: z.url().optional(),
     featured: z.boolean().default(false),

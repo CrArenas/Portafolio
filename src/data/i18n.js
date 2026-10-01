@@ -4,9 +4,11 @@
 // ── ESPAÑOL (fuente de verdad) ───────────────────────────────────────────────
 export const es = {
   lang: 'es',
-  docTitle: 'Cristian Arenas — Desarrollador de software · 3D & XR',
-  metaDescription: 'Portafolio de Cristian A. Arenas: desarrollador de software web, móvil y fullstack (Laravel, React, React Native) con experiencia en 3D, videojuegos y realidad virtual y mixta.',
+  docTitle: 'Cristian Andrés Arenas Vargas — Desarrollador de software · 3D & XR',
+  metaDescription: 'Portafolio de Cristian Andrés Arenas Vargas: desarrollador de software web, móvil y fullstack (Laravel, React, React Native) con experiencia en 3D, videojuegos y realidad virtual y mixta.',
   langAria: 'Switch to English',
+  navLabel: 'Navegación principal',
+  footer: { built: 'Hecho con Astro, Three.js y Anime.js' },
   nav: {
     home:    'Inicio',
     dev:     'Desarrollo',
@@ -16,15 +18,16 @@ export const es = {
   },
   spine: {
     role:     'Software · 3D & XR',
-    subtitle: 'Portafolio interactivo',
   },
   home: {
-    eyebrow:      'Hola, soy Cristian Arenas',
+    eyebrow:      'Hola, soy Cristian Andrés Arenas Vargas',
     roles:        ['Desarrollador fullstack', 'Artista 3D', 'Desarrollador XR'],
     title:        'Desarrollo software web, móvil <span>e inmersivo</span>',
     body:         'Soy desarrollador de software y técnico en modelado 3D y videojuegos. Construyo aplicaciones web y móviles con Laravel, React y React Native, y experiencias de realidad virtual y mixta con Unity. Aquí encontrarás mis proyectos de desarrollo contados desde adentro y mi trabajo en 3D y XR.',
     canvasHint:      'Mueve el cursor sobre la malla · haz clic para crear ondas',
     canvasHintTouch: 'Toca la malla para crear ondas',
+    featuredLabel:   'Proyectos destacados',
+    viewAll:         'Ver todos',
   },
   about: {
     eyebrow: 'Perfil',
@@ -80,9 +83,11 @@ export const es = {
 // ── INGLÉS (pre-traducido) ───────────────────────────────────────────────────
 export const en = {
   lang: 'en',
-  docTitle: 'Cristian Arenas — Software Developer · 3D & XR',
-  metaDescription: 'Portfolio of Cristian A. Arenas: web, mobile and fullstack software developer (Laravel, React, React Native) with experience in 3D, video games and virtual and mixed reality.',
+  docTitle: 'Cristian Andrés Arenas Vargas — Software Developer · 3D & XR',
+  metaDescription: 'Portfolio of Cristian Andrés Arenas Vargas: web, mobile and fullstack software developer (Laravel, React, React Native) with experience in 3D, video games and virtual and mixed reality.',
   langAria: 'Cambiar a español',
+  navLabel: 'Main navigation',
+  footer: { built: 'Built with Astro, Three.js and Anime.js' },
   nav: {
     home:    'Home',
     dev:     'Development',
@@ -92,15 +97,16 @@ export const en = {
   },
   spine: {
     role:     'Software · 3D & XR',
-    subtitle: 'Interactive portfolio',
   },
   home: {
-    eyebrow:      'Hi, I\'m Cristian Arenas',
+    eyebrow:      'Hi, I\'m Cristian Andrés Arenas Vargas',
     roles:        ['Fullstack developer', '3D artist', 'XR developer'],
     title:        'I build web, mobile <span>and immersive</span> software',
     body:         'I am a software developer and a 3D modeling and video game technician. I build web and mobile applications with Laravel, React and React Native, and virtual and mixed reality experiences with Unity. Here you will find my development projects told from the inside and my work in 3D and XR.',
     canvasHint:      'Move your cursor over the grid · click to make waves',
     canvasHintTouch: 'Tap the grid to make waves',
+    featuredLabel:   'Featured projects',
+    viewAll:         'View all',
   },
   about: {
     eyebrow: 'Profile',

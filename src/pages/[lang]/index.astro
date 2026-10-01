@@ -1,28 +1,43 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
 import { ui, langPaths } from '../../data/i18n.js';
+import { pageUrl } from '../../data/routes.js';
+import { getPosts } from '../../utils/content.js';
 
 export const getStaticPaths = langPaths;
 
 const { lang } = Astro.params;
 const t = ui[lang];
+const featured = (await getPosts(lang)).slice(0, 3);
 ---
 <BaseLayout lang={lang} current="home">
-  <div class="home-hero">
-    <div class="home-intro">
-      <div class="section-eyebrow">
-        {t.home.eyebrow}
-        <span aria-hidden="true"> · </span>
-        {/* Alterna entre los roles con scrambleText (ver scripts/motion.js) */}
-        <span class="home-role" data-roles={JSON.stringify(t.home.roles)}>{t.home.roles[0]}</span>
-      </div>
-      <h1 class="section-title" set:html={t.home.title} />
-      <p class="section-body">{t.home.body}</p>
+  <section class="hero">
+    <div class="section-eyebrow">
+      {t.home.eyebrow}
+      <span aria-hidden="true"> · </span>
+      {/* Alterna entre los roles con scrambleText (ver scripts/motion.js) */}
+      <span class="home-role" data-roles={JSON.stringify(t.home.roles)}>{t.home.roles[0]}</span>
     </div>
-    <div class="home-canvas-wrap" aria-hidden="true">
-      <canvas id="hero-canvas"></canvas>
-      <span class="hero-canvas-hint hint-pointer">{t.home.canvasHint}</span>
-      <span class="hero-canvas-hint hint-touch">{t.home.canvasHintTouch}</span>
-    </div>
+    <h1 class="section-title hero-title" set:html={t.home.title} />
+    <p class="section-body hero-body">{t.home.body}</p>
+  </section>
+
+  <div class="home-canvas-wrap" aria-hidden="true">
+    <canvas id="hero-canvas"></canvas>
+    <span class="hero-canvas-hint hint-pointer">{t.home.canvasHint}</span>
+    <span class="hero-canvas-hint hint-touch">{t.home.canvasHintTouch}</span>
   </div>
+
+  {featured.length > 0 && (
+    <section class="section" aria-labelledby="featured-title">
+      <div class="section-head">
+        <h2 class="section-heading" id="featured-title">{t.home.featuredLabel}</h2>
+        <a class="text-link" href={pageUrl(lang, 'dev')}>{t.home.viewAll} <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="posts-grid">
+        {featured.map(post => <PostCard post={post} lang={lang} />)}
+      </div>
+    </section>
+  )}
 </BaseLayout>

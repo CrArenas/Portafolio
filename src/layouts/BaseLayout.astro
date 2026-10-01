@@ -1,7 +1,9 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
 import { ui, locales } from '../data/i18n.js';
+import { AUTHOR } from '../data/site.js';
 import '../styles/global.css';
 
 // current: id de la página activa (ver src/data/routes.js)
@@ -9,8 +11,8 @@ import '../styles/global.css';
 const { lang, current, title: pageTitle, description = ui[lang].metaDescription, ogType = 'website' } = Astro.props;
 const t = ui[lang];
 const title = pageTitle
-  ? `${pageTitle} — Cristian Arenas`
-  : current === 'home' ? t.docTitle : `${t.nav[current]} — Cristian Arenas`;
+  ? `${pageTitle} — ${AUTHOR}`
+  : current === 'home' ? t.docTitle : `${t.nav[current]} — ${AUTHOR}`;
 
 // La misma ruta en cada idioma: /es/about <-> /en/about
 const pathFor = (l) => Astro.url.pathname.replace(`/${lang}/`, `/${l}/`).replace(new RegExp(`^/${lang}$`), `/${l}`);
@@ -27,8 +29,8 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="author" content="Cristian A. Arenas" />
-    <meta name="theme-color" content="#0D0D14" />
+    <meta name="author" content={AUTHOR} />
+    <meta name="theme-color" content="#0A0D16" />
 
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={ogType} />
@@ -42,29 +44,26 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
 
     {locales.map(l => <link rel="alternate" hreflang={l} href={new URL(pathFor(l), Astro.site)} />)}
-    <link rel="alternate" type="application/rss+xml" title={`Cristian Arenas — ${t.nav.dev}`} href={`/${lang}/rss.xml`} />
+    <link rel="alternate" type="application/rss+xml" title={`${AUTHOR} — ${t.nav.dev}`} href={`/${lang}/rss.xml`} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <ClientRouter />
   </head>
   <body>
-    <div class="book">
-      <Navigation lang={lang} current={current} altUrl={pathFor(altLang)} />
-      <main class="pages-area">
-        <!-- Las partículas de fondo sobreviven a la navegación entre páginas -->
-        <div class="bg-wrap" transition:persist="bg">
-          <canvas id="bg-canvas"></canvas>
-        </div>
-        <section class="page" id={`page-${current}`}>
-          <slot />
-        </section>
-      </main>
+    <!-- Las partículas de fondo sobreviven a la navegación entre páginas -->
+    <div class="bg-wrap" transition:persist="bg" aria-hidden="true">
+      <canvas id="bg-canvas"></canvas>
     </div>
+    <Navigation lang={lang} current={current} altUrl={pathFor(altLang)} />
+    <main class="page container" id={`page-${current}`}>
+      <slot />
+    </main>
+    <Footer lang={lang} />
 
     <script>
       import '../scripts/app.js';

@@ -1,0 +1,14 @@
+---
+import Socials from './Socials.astro';
+import { ui } from '../data/i18n.js';
+import { AUTHOR } from '../data/site.js';
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-text">© {new Date().getFullYear()} {AUTHOR} · {t.footer.built}</p>
+    <Socials />
+  </div>
+</footer>

@@ -7,7 +7,7 @@ export const pages = [
   { id: 'xr',      slug: '3d-xr' },
   { id: 'about',   slug: 'about' },
   { id: 'contact', slug: 'contact' },
-].map((p, i) => ({ ...p, num: String(i + 1).padStart(2, '0') }));
+];
 
 export const pageUrl = (lang, id) =>
   getRelativeLocaleUrl(lang, pages.find(p => p.id === id).slug);

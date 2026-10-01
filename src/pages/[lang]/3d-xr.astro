@@ -13,12 +13,14 @@ const L = (value) => loc(value, lang);
 const [models, projects] = await Promise.all([getOrdered('models'), getOrdered('xr')]);
 ---
 <BaseLayout lang={lang} current="xr">
-  <div class="section-eyebrow">{t.xr.eyebrow}</div>
-  <h1 class="section-title" set:html={t.xr.title} />
-  <p class="section-body">{t.xr.body}</p>
+  <header class="page-intro">
+    <div class="section-eyebrow">{t.xr.eyebrow}</div>
+    <h1 class="section-title" set:html={t.xr.title} />
+    <p class="section-body">{t.xr.body}</p>
+  </header>
 
-  <section class="xr-section" id="xr-projects" aria-labelledby="xr-projects-title">
-    <h2 class="block-label" id="xr-projects-title">{t.xr.projectsLabel}</h2>
+  <section class="section" id="xr-projects" aria-labelledby="xr-projects-title">
+    <h2 class="section-heading" id="xr-projects-title">{t.xr.projectsLabel}</h2>
     <div class="games-grid">
       {projects.map(({ data: g }, i) => (
         <article class="game-card">
@@ -45,8 +47,8 @@ const [models, projects] = await Promise.all([getOrdered('models'), getOrdered('
     </div>
   </section>
 
-  <section class="xr-section" id="models" aria-labelledby="models-title">
-    <h2 class="block-label" id="models-title">{t.xr.modelsLabel}</h2>
+  <section class="section" id="models" aria-labelledby="models-title">
+    <h2 class="section-heading" id="models-title">{t.xr.modelsLabel}</h2>
     <p class="section-body">{t.xr.modelsHint}</p>
     <div class="projects-grid">
       {models.map(({ data: m }) => (

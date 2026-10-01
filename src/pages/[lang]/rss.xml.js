@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { ui, langPaths } from '../../data/i18n.js';
+import { AUTHOR } from '../../data/site.js';
 import { getPosts, postSlug } from '../../utils/content.js';
 
 // Feed RSS de los artículos de Desarrollo: /es/rss.xml y /en/rss.xml
@@ -11,7 +12,7 @@ export async function GET({ params, site }) {
   const t = ui[lang];
   const posts = await getPosts(lang);
   return rss({
-    title: `Cristian Arenas — ${t.nav.dev}`,
+    title: `${AUTHOR} — ${t.nav.dev}`,
     description: t.dev.body,
     site,
     customData: `<language>${lang === 'es' ? 'es-co' : 'en-us'}</language>`,

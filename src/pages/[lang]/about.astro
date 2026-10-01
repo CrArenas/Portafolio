@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { ui, langPaths, loc } from '../../data/i18n.js';
 import { skillGroups } from '../../data/skills.js';
+import { AUTHOR } from '../../data/site.js';
 
 export const getStaticPaths = langPaths;
 
@@ -12,7 +13,7 @@ const L = (value) => loc(value, lang);
 <BaseLayout lang={lang} current="about">
   <div class="about-header">
     <div class="profile-photo-wrap">
-      <img src="/images/profile.jpg" alt="Cristian A. Arenas" class="profile-photo" />
+      <img src="/images/profile.jpg" alt={AUTHOR} class="profile-photo" />
       <div class="profile-photo-ring"></div>
     </div>
     <div>
