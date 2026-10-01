@@ -2,7 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { ui, langPaths, loc } from '../../data/i18n.js';
 import { skillGroups } from '../../data/skills.js';
-import { LINKS } from '../../data/links.js';
 
 export const getStaticPaths = langPaths;
 
@@ -24,10 +23,7 @@ const L = (value) => loc(value, lang);
 
   <div class="about-layout">
     <div class="about-body">
-      <p class="section-body">{t.about.p1}</p>
-      <p class="section-body">{t.about.p2}</p>
-      <p class="section-body">{t.about.p3}</p>
-      <p class="section-body">{t.about.p4}</p>
+      {t.about.body.map(p => <p class="section-body">{p}</p>)}
     </div>
 
     <aside class="about-side">
@@ -41,7 +37,6 @@ const L = (value) => loc(value, lang);
             </li>
           ))}
         </ul>
-        <a class="btn btn-ghost about-cv" href={LINKS.cv} target="_blank" rel="noopener noreferrer">{t.about.cv} <span aria-hidden="true">↗</span></a>
       </div>
 
       <div class="side-block">

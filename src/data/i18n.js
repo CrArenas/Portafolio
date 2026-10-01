@@ -37,11 +37,11 @@ export const es = {
   about: {
     eyebrow: 'Perfil',
     title:   'Sobre <span>mí</span>',
-    p1: 'Mi nombre es Cristian Andrés, soy estudiante de Administración de Sistemas Informáticos y técnico en Modelado 3D y Desarrollo de Videojuegos. Mi experiencia abarca tanto el desarrollo de software como la creación de contenido digital, participando en proyectos de modelado 3D, videojuegos, realidad virtual y aplicaciones web y móviles.',
-    p2: 'He trabajado en la creación de assets 3D para impresión 3D utilizando herramientas como Blender, ZBrush y Photoshop, colaborando con empresas del sector para el desarrollo de modelos optimizados y listos para producción. También he participado en el desarrollo de videojuegos y experiencias de realidad virtual utilizando Unity, contribuyendo tanto en programación como en diseño de mecánicas y el desarrollo de escenarios.',
-    p3: 'Además, he desarrollado proyectos académicos como aplicativos web y móviles utilizando tecnologías como Laravel, React y React Native, y cuento con experiencia en el uso de herramientas de inteligencia artificial aplicadas a procesos de desarrollo en distintas áreas.',
-    p4: 'Me llama la atención especialmente el diseño de interfaces de usuario, ya sea para videojuegos o aplicaciones, buscando siempre crear experiencias intuitivas, atractivas y funcionales. Disfruto aprender constantemente, enfrentar nuevos desafíos y seguir fortaleciendo mis habilidades para aportar cada vez más valor a los proyectos en los que participo.',
-    cv:             'Ver CV en LinkedIn',
+    body: [
+      'Soy desarrollador de software y estudiante de Administración de Sistemas Informáticos. He construido aplicaciones web y móviles con Laravel, React y React Native, y experiencias de realidad virtual y mixta con Unity y C#, como una guía de mantenimiento para HoloLens 2 que reconoce la máquina real con Vuforia.',
+      'Vengo del modelado 3D: como técnico en Modelado 3D y Desarrollo de Videojuegos he creado modelos listos para producción para empresas de impresión 3D, con Blender y ZBrush. Esa mezcla es mi diferencial: me importa que lo que construyo se vea y se sienta bien, no solo que funcione.',
+      'Busco roles de desarrollo fullstack, frontend o móvil, y proyectos de realidad virtual y mixta con Unity, donde pueda aportar desde el código y el diseño de interfaces.',
+    ],
     educationLabel: 'Formación',
     education: [
       { title: 'Administración de Sistemas Informáticos', note: 'En curso' },
@@ -123,11 +123,11 @@ export const en = {
   about: {
     eyebrow: 'Profile',
     title:   'About <span>me</span>',
-    p1: 'My name is Cristian Andrés. I am a Computer Systems Administration student and a technician in 3D Modeling and Video Game Development. My experience spans both software development and digital content creation, having participated in 3D modeling, video game, virtual reality, and web and mobile application projects.',
-    p2: 'I have worked on the creation of 3D assets for 3D printing using tools such as Blender, ZBrush, and Photoshop, collaborating with companies in the sector to develop optimized, production-ready models. I have also participated in the development of video games and virtual reality experiences using Unity, contributing to both programming and game mechanics design, as well as level design.',
-    p3: 'Additionally, I have developed academic projects such as web and mobile applications using technologies like Laravel, React, and React Native, and I have experience using artificial intelligence tools applied to development processes across different areas.',
-    p4: 'I am especially drawn to user interface design, whether for games or applications, always aiming to create intuitive, visually appealing, and functional experiences. I enjoy learning constantly, taking on new challenges, and continuing to strengthen my skills to bring more value to every project I am part of.',
-    cv:             'View CV on LinkedIn',
+    body: [
+      'I am a software developer and a Computer Systems Administration student. I have built web and mobile applications with Laravel, React and React Native, and virtual and mixed reality experiences with Unity and C#, such as a maintenance guide for HoloLens 2 that recognizes the real machine with Vuforia.',
+      'I come from 3D modeling: as a 3D Modeling and Video Game Development technician I have created production-ready models for 3D printing companies with Blender and ZBrush. That mix is what sets me apart: I care that what I build looks and feels right, not just that it works.',
+      'I am looking for fullstack, frontend or mobile development roles, and virtual and mixed reality projects with Unity, where I can contribute through both code and interface design.',
+    ],
     educationLabel: 'Education',
     education: [
       { title: 'Computer Systems Administration', note: 'In progress' },

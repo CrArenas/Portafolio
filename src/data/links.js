@@ -1,8 +1,6 @@
 // ── Enlaces externos e iconos ──────────────────────────────────────────────
 export const LINKS = {
   linkedin:   'https://www.linkedin.com/in/candresav123/',
-  // Sección "Destacado" del perfil, donde está el CV en PDF
-  cv:         'https://www.linkedin.com/in/candresav123/details/featured/',
   artstation: 'https://www.artstation.com/carenas',
   github:     'https://github.com/CrArenas',
 };

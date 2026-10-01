@@ -1,0 +1,137 @@
+---
+title: "Roomix: hotel bookings with a Laravel API and a React Native app"
+summary: An end-to-end booking system, with a Laravel REST API secured with JWT, a web admin panel and a React Native mobile app built with Expo.
+date: 2026-05-25
+stack: [Laravel, PHP, MySQL, JWT, React Native, Expo]
+role: Fullstack and mobile development (solo project)
+repo: https://github.com/CrArenas/ProyectoMoviles
+---
+
+## The problem
+
+A hotel needs two different things from the same system. Guests want to book
+from their phone, check their stays and confirm payments. Staff want to manage
+rooms, room types, users and payments without wrestling with the database.
+
+Roomix covers both with a single backend: an API for the mobile app and a web
+panel for administration.
+
+## My role
+
+Solo project: database design, API, admin panel and mobile app.
+
+## Architecture
+
+- **Laravel 10 backend** with MySQL. It exposes a REST API under `/api` and, in
+  the same project, a Blade admin panel under `/admin`.
+- **JWT authentication** (`tymon/jwt-auth`) for the app, and classic sessions
+  for the panel.
+- **Roles**: a `role:admin` middleware separates what a guest can do from what
+  only an administrator can do.
+- **React Native mobile app with Expo**: tab navigation, an authentication
+  context and an `axios` client that attaches the token to every request.
+
+![The app's four main screens: sign in, home, bookings and profile](../images/roomix/app.png)
+
+## Technical challenges
+
+### 1. Bookings must never overlap
+
+The system's most important rule: a room can't be booked twice for the same
+dates, and a guest can't hold two active bookings that overlap. Both checks live
+on the server, not in the app:
+
+```php
+private function hasOverlappingReservation(int $roomId, string $checkIn, string $checkOut): bool
+{
+    return Reservation::query()
+        ->where('room_id', $roomId)
+        ->where(function ($query) use ($checkIn, $checkOut) {
+            $query->whereBetween('check_in', [$checkIn, $checkOut])
+                ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                ->orWhere(fn ($q) => $q->where('check_in', '<=', $checkIn)
+                                        ->where('check_out', '>=', $checkOut));
+        })
+        ->exists();
+}
+```
+
+Once it passes validation, the booking is created inside a transaction together
+with the room's status change. That way there is never a booking saved with its
+room still marked as available, or the other way around:
+
+```php
+DB::beginTransaction();
+$reservation = Reservation::create([...]);
+$room->update(['status' => 'ocupada']);
+DB::commit();
+```
+
+The total is computed by the server too (nights × room price), so the app can't
+send a different price.
+
+### 2. Who can do what
+
+The API routes are split into two groups. An authenticated guest can list rooms,
+manage their bookings and companions, and register payments; the rest of the
+CRUD (roles, room types, rooms, users and payment management) also requires the
+administrator role:
+
+```php
+Route::middleware('auth:api')->group(function () {
+    Route::get('rooms', [RoomController::class, 'index']);
+    Route::apiResource('reservations', ReservationController::class);
+    Route::post('payments', [PaymentController::class, 'store']);
+});
+
+Route::middleware(['auth:api', 'role:admin'])->group(function () {
+    Route::apiResource('rooms', RoomController::class);
+    Route::apiResource('users', UserController::class);
+});
+```
+
+And viewing or editing a booking checks that it belongs to the user asking: a
+valid token isn't enough to see someone else's bookings.
+
+### 3. Knowing who changed what
+
+Bookings, payments, rooms and users use
+[laravel-auditing](https://github.com/owen-it/laravel-auditing): every create,
+update or delete is recorded with the user who made it and the previous values.
+In a system that handles payments, that history is the first thing you need
+when something doesn't add up.
+
+### 4. Getting the app to talk to the backend
+
+During development the app runs on an emulator or a phone, and `localhost`
+doesn't mean the same thing everywhere: on the Android emulator the computer is
+`10.0.2.2`. The HTTP client resolves the backend address from Expo's host and
+adds the stored token to every request:
+
+```js
+api.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+```
+
+When the app opens, the authentication context reads the stored token and asks
+for the current user; if the token no longer works, it deletes it and sends the
+user to sign in.
+
+## Result
+
+A complete system: guests book and follow their stay from the app, and the
+administrator manages everything from a web panel with the hotel's key figures.
+
+![Admin panel with the hotel's key figures and bookings from the last few days](../images/roomix/admin.png)
+
+## Lessons learned
+
+- **Business rules belong on the server.** The app can validate to improve the
+  experience, but the API is what decides whether a booking is valid.
+- **Transactions prevent impossible states.** The booking and the room's status
+  change together or not at all.
+- **One backend can serve two audiences** if authorization is cleanly separated
+  from the routes up.

@@ -924,8 +924,6 @@ button:focus-visible {
   color: var(--parchment);
 }
 
-.about-cv { margin-top: 16px; }
-
 .education-note {
   font-family: var(--font-mono);
   font-size: 10px;

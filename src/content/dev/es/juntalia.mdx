@@ -1,0 +1,123 @@
+---
+title: "Juntalia: una plataforma de eventos con búsqueda por cercanía"
+summary: Una plataforma web para crear eventos, inscribirse, comentar y descubrir lo que pasa cerca, hecha con Laravel, Blade y la geolocalización del navegador.
+date: 2025-02-22
+stack: [Laravel, PHP, Blade, MySQL, JavaScript]
+role: Interfaz en Blade y módulo de eventos e inscripciones (equipo de 3)
+repo: https://github.com/CrArenas/ProyectoWebJuntalia
+---
+
+## El problema
+
+Los eventos de una ciudad (talleres, conciertos, meetups, ferias) suelen estar
+regados por redes sociales y grupos de chat. Juntalia los reúne en un solo
+lugar: cualquiera puede publicar un evento, inscribirse, comentar y, sobre todo,
+ver qué está pasando cerca de donde está.
+
+## Mi rol
+
+Equipo de tres personas. Me encargué de la **interfaz en Blade** (la página
+pública, el inicio, el detalle de cada evento y las secciones personales) y del
+**módulo de eventos e inscripciones**: crear, editar y eliminar eventos propios,
+inscribirse y cancelar. El panel de administración, los reportes y la versión
+en React del panel de usuarios los hicieron mis compañeros.
+
+## Arquitectura
+
+Una aplicación Laravel 10 clásica, con vistas en Blade:
+
+- **Modelos**: eventos, inscripciones, comentarios, categorías, ciudades,
+  multimedia, usuarios y roles.
+- **Roles**: los usuarios publican e inscriben; el administrador gestiona
+  usuarios, ciudades y eventos y genera reportes.
+- **Cada evento guarda su ubicación** (latitud y longitud), que es lo que
+  permite buscar por cercanía.
+
+![Página pública de Juntalia con el carrusel de eventos destacados y la mascota](../images/juntalia/landing.jpg)
+
+## Retos técnicos
+
+### 1. Eventos cerca de ti
+
+La sección "Eventos cercanos" del inicio usa la ubicación del navegador. Cuando
+el usuario da permiso, la página pide al servidor los eventos cercanos a esas
+coordenadas:
+
+```js
+navigator.geolocation.getCurrentPosition(function (position) {
+  const { latitude: lat, longitude: lng } = position.coords
+  fetch(`/eventos-cercanos?lat=${lat}&lng=${lng}`)
+    .then(response => response.json())
+    .then(data => mostrarEventos(data))
+})
+```
+
+En el servidor, la distancia se calcula con la **fórmula de Haversine**
+directamente en la consulta SQL, y solo se devuelven los eventos a menos de
+10 km, ordenados del más cercano al más lejano:
+
+```php
+$events = Event::selectRaw("
+        *,
+        (6371 * acos(
+            cos(radians(?)) * cos(radians(lat)) *
+            cos(radians(lng) - radians(?)) +
+            sin(radians(?)) * sin(radians(lat))
+        )) AS distancia", [$latitud, $longitud, $latitud])
+    ->having('distancia', '<', 10)
+    ->orderBy('distancia')
+    ->get();
+```
+
+El 6371 es el radio de la Tierra en kilómetros: la fórmula mide la distancia
+sobre la superficie de una esfera, no en línea recta sobre un mapa plano.
+
+![Inicio con las categorías de eventos y la sección de eventos cercanos](../images/juntalia/home.png)
+
+### 2. Inscripciones sin duplicados
+
+Inscribirse es un clic, así que también es fácil hacerlo dos veces. Antes de
+crear la inscripción se valida que el usuario y el evento existan y que no haya
+una inscripción previa:
+
+```php
+$request->validate([
+    'user_id' => 'required|exists:users,id',
+    'event_id' => 'required|exists:events,id',
+]);
+
+$existing = Inscription::where('user_id', $request->user_id)
+    ->where('event_id', $request->event_id)
+    ->first();
+
+if ($existing) {
+    return redirect()->back()->with('error', 'Ya estás inscrito en este evento.');
+}
+```
+
+### 3. Una interfaz para cada momento
+
+Cada pantalla responde a una pregunta del usuario: ¿qué hay? (categorías y
+eventos cercanos), ¿de qué se trata? (detalle con fecha, costo, restricción de
+edad, dirección y comentarios), ¿a qué voy? ("Mis inscripciones") y ¿qué
+publiqué? ("Mis eventos", con edición y borrado).
+
+![Detalle de un evento con su información, el botón de inscripción y los comentarios](../images/juntalia/event.jpg)
+
+## Resultado
+
+Una plataforma funcional de punta a punta: publicar un evento, encontrarlo por
+categoría o por cercanía, inscribirse, comentarlo y gestionarlo desde las
+secciones personales.
+
+![Mis inscripciones, con la opción de anular cada una](../images/juntalia/inscriptions.png)
+
+## Aprendizajes
+
+- **La geolocalización se resuelve mejor en la base de datos.** Calcular la
+  distancia en SQL evita traer todos los eventos a PHP para filtrarlos.
+- **Las reglas de unicidad conviene reforzarlas también en la base de datos.**
+  La validación en el controlador funciona, y un índice único sobre
+  `(user_id, event_id)` la blindaría incluso ante dos clics simultáneos.
+- **Diseñar por preguntas del usuario ordena la interfaz.** Cada vista tiene un
+  propósito claro y no compite con las demás.
