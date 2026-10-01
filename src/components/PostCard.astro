@@ -1,18 +1,16 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { ui, formatDate } from '../data/i18n.js';
-import { postSlug, readingMinutes } from '../utils/content.js';
+import { postSlug } from '../utils/content.js';
 
 const { post, lang } = Astro.props;
 const t = ui[lang];
 const { title, summary, date, stack, draft } = post.data;
 ---
-<article class="post-card" data-stack={JSON.stringify(stack)}>
+<article class="post-card">
   <a class="post-card-link" href={getRelativeLocaleUrl(lang, `dev/${postSlug(post)}`)}>
     <div class="post-meta">
       <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
-      <span aria-hidden="true">·</span>
-      <span>{readingMinutes(post)} {t.dev.minutes}</span>
       {draft && <span class="post-draft">{t.dev.draft}</span>}
     </div>
     <h3 class="post-card-title">{title} <span class="post-card-arrow" aria-hidden="true">→</span></h3>

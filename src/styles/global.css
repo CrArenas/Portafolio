@@ -1024,32 +1024,52 @@ button:focus-visible {
 .contact-item:hover .contact-arrow { transform: translate(2px, -2px); }
 
 /* ── DEVELOPMENT (lista de artículos) ── */
-.dev-filters {
+.tech-marquee {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 40px;
+  overflow: hidden;
   margin-top: 40px;
+  padding: 18px 0;
+  border-top: 1px solid var(--gold-line);
+  border-bottom: 1px solid var(--gold-line);
+  /* Desvanecido en los bordes para que los logos entren y salgan suavemente */
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
 
-.filter-chip {
+/* Las dos copias de la lista avanzan juntas: cuando la primera sale por
+   completo, la segunda ocupa su lugar y el recorrido parece infinito. */
+.tech-track {
+  display: flex;
+  flex-shrink: 0;
+  gap: 40px;
+  list-style: none;
+  animation: tech-scroll 30s linear infinite;
+}
+
+.tech-marquee:hover .tech-track { animation-play-state: paused; }
+
+@keyframes tech-scroll {
+  to { transform: translateX(calc(-100% - 40px)); }
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.06em;
-  padding: 7px 12px;
   color: var(--parchment-dim);
-  background: transparent;
-  border: 1px solid var(--gold-line);
-  border-radius: 2px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  white-space: nowrap;
 }
 
-.filter-chip:hover { color: var(--parchment); border-color: var(--gold-line-strong); }
+.tech-item svg { flex-shrink: 0; }
 
-.filter-chip[aria-pressed="true"] {
-  color: var(--night);
-  background: var(--gold);
-  border-color: var(--gold);
+/* Sin movimiento: una sola lista, completa y quieta */
+@media (prefers-reduced-motion: reduce) {
+  .tech-marquee { mask-image: none; }
+  .tech-track { flex-wrap: wrap; flex-shrink: 1; row-gap: 14px; }
+  .tech-track[aria-hidden="true"] { display: none; }
 }
 
 .posts-list {
@@ -1065,8 +1085,6 @@ button:focus-visible {
   background: var(--card-bg);
   transition: border-color 0.3s, transform 0.3s, background 0.3s;
 }
-
-.post-card[hidden] { display: none; }
 
 .post-card:hover {
   border-color: var(--gold-line-strong);

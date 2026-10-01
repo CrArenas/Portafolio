@@ -5,7 +5,7 @@
 import { initBgScene } from '../scenes/bgScene.js';
 import { initHeroScene } from '../scenes/heroScene.js';
 import { initCardScene } from '../scenes/cardScene.js';
-import { startMotion, filterPosts } from './motion.js';
+import { startMotion } from './motion.js';
 
 // ── Detectar Safari móvil ──────────────────────────────────────────────────
 const isMobileSafari =
@@ -190,25 +190,6 @@ function playVideo(poster) {
   poster.replaceWith(iframe);
 }
 
-// ── Filtro de artículos por tecnología (página Desarrollo) ────────────────
-// El filtro activo queda en la URL (?tag=Astro) para poder compartirlo.
-function applyPostFilter(tag, { animated = false } = {}) {
-  const chips = document.querySelectorAll('.filter-chip');
-  if (!chips.length) return;
-  const known = [...chips].some(c => c.dataset.filter === tag);
-  const active = known ? tag : '';
-  chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === active)));
-  const apply = () => document.querySelectorAll('.posts-list .post-card').forEach(card => {
-    card.hidden = active !== '' && !JSON.parse(card.dataset.stack).includes(active);
-  });
-  if (animated) filterPosts(apply);
-  else apply();
-  const url = new URL(location.href);
-  if (active) url.searchParams.set('tag', active);
-  else url.searchParams.delete('tag');
-  history.replaceState(history.state, '', url);
-}
-
 // ── Eventos (delegación: sobrevive a los cambios de página) ───────────────
 document.addEventListener('click', e => {
   if (e.target.closest('#hamburger')) {
@@ -216,12 +197,7 @@ document.addEventListener('click', e => {
     return;
   }
   const poster = e.target.closest('.video-poster');
-  if (poster) {
-    playVideo(poster);
-    return;
-  }
-  const chip = e.target.closest('.filter-chip');
-  if (chip) applyPostFilter(chip.dataset.filter, { animated: true });
+  if (poster) playVideo(poster);
 });
 
 let motionScope = null;
@@ -229,8 +205,6 @@ let motionScope = null;
 document.addEventListener('astro:page-load', () => {
   startBackground();
   startPageScenes();
-  // El filtro inicial (?tag=) se aplica antes de animar nada
-  applyPostFilter(new URLSearchParams(location.search).get('tag') ?? '');
   motionScope = startMotion();
 });
 

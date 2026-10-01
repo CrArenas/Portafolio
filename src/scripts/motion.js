@@ -7,7 +7,6 @@ import {
   animate,
   createAnimatable,
   createDrawable,
-  createLayout,
   createScope,
   createTimeline,
   onScroll,
@@ -17,9 +16,6 @@ import {
   utils,
 } from 'animejs';
 
-// Layout de la lista de artículos de la página actual (ver filterPosts)
-let postsLayout = null;
-
 export function startMotion() {
   return createScope({
     mediaQueries: {
@@ -28,35 +24,15 @@ export function startMotion() {
     },
   }).add(self => {
     const { reduce, finePointer } = self.matches;
+    if (reduce) return;
     const page = document.querySelector('.page');
-
-    // El layout también se usa sin animación para que el filtro funcione igual
-    const list = document.querySelector('.posts-list');
-    if (list) {
-      postsLayout = createLayout(list, {
-        duration: reduce ? 0 : 450,
-        ease: 'out(3)',
-        enterFrom: { opacity: 0, transform: 'translateY(12px)' },
-        leaveTo: { opacity: 0, transform: 'translateY(-8px)' },
-      });
-    }
-
-    if (reduce) return () => { postsLayout = null; };
 
     drawHeaderLine();
     revealTitle();
     rotateRole();
     revealOnScroll(page);
     if (finePointer) magnetize();
-
-    return () => { postsLayout = null; };
   });
-}
-
-// Filtra la lista de artículos animando el cambio de layout.
-export function filterPosts(apply) {
-  if (postsLayout) postsLayout.update(apply);
-  else apply();
 }
 
 // La línea dorada bajo el número de página se dibuja de izquierda a derecha.

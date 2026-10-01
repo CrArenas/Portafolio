@@ -34,7 +34,3 @@ export async function getPostPaths() {
     .filter(p => import.meta.env.DEV || !p.data.draft)
     .map(post => ({ params: { lang: postLang(post), slug: postSlug(post) }, props: { post } }));
 }
-
-// Minutos de lectura aproximados (~220 palabras por minuto)
-export const readingMinutes = (post) =>
-  Math.max(1, Math.round((post.body ?? '').split(/\s+/).length / 220));

@@ -1,0 +1,25 @@
+---
+import { techLogo } from '../data/techLogos.js';
+
+// Carrusel decorativo de tecnologías: se desplaza solo y no es interactivo.
+// La lista se repite dos veces para que el recorrido sea continuo; la copia
+// queda oculta para lectores de pantalla.
+const { items, label } = Astro.props;
+const techs = items.map(name => ({ name, logo: techLogo(name) }));
+---
+<div class="tech-marquee" role="region" aria-label={label}>
+  {[false, true].map(copy => (
+    <ul class="tech-track" aria-hidden={copy ? 'true' : undefined}>
+      {techs.map(({ name, logo }) => (
+        <li class="tech-item">
+          {logo && (
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style={`color: ${logo.color}`}>
+              <path d={logo.path} fill="currentColor" />
+            </svg>
+          )}
+          <span>{name}</span>
+        </li>
+      ))}
+    </ul>
+  ))}
+</div>

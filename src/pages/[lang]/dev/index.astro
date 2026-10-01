@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
+import TechMarquee from '../../../components/TechMarquee.astro';
 import { ui, langPaths } from '../../../data/i18n.js';
 import { getPosts } from '../../../utils/content.js';
 
@@ -22,11 +23,7 @@ const stack = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a) ||
     <p class="dev-empty">{t.dev.empty}</p>
   ) : (
     <>
-      {/* El filtrado ocurre en el navegador (ver scripts/app.js) */}
-      <div class="dev-filters" role="group" aria-label={t.dev.filterLabel}>
-        <button class="filter-chip" type="button" data-filter="" aria-pressed="true">{t.dev.filterAll}</button>
-        {stack.map(s => <button class="filter-chip" type="button" data-filter={s} aria-pressed="false">{s}</button>)}
-      </div>
+      <TechMarquee items={stack} label={t.dev.techLabel} />
       <div class="posts-list">
         {posts.map(post => <PostCard post={post} lang={lang} />)}
       </div>

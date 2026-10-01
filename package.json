@@ -16,6 +16,7 @@
     "@astrojs/sitemap": "^3.7.4",
     "animejs": "^4.5.0",
     "astro": "^7.3.5",
+    "simple-icons": "^16.33.0",
     "three": "^0.185.0"
   },
   "devDependencies": {
